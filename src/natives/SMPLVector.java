@@ -7,10 +7,7 @@ package natives;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- *
- * @author jean-paul
- */
+
 public class SMPLVector {
     public static ArrayList<SMPLContainer> NIL = new ArrayList();
     ArrayList<SMPLContainer> values;

@@ -4,10 +4,7 @@
  */
 package natives;
 
-/**
- *
- * @author jean-paul
- */
+
 public class SMPLBoolean {
     boolean value;
     

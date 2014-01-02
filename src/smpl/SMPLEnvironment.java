@@ -7,10 +7,7 @@ package smpl;
 import java.util.HashMap;
 import natives.SMPLContainer;
 
-/**
- *
- * @author jean-paul
- */
+
 public class SMPLEnvironment {
     private HashMap<String, SMPLContainer> env;
     private SMPLEnvironment parent;

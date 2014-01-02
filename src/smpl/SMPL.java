@@ -4,16 +4,13 @@
  */
 package smpl;
 
-import syntax.SMPLProgram;
+import ast.SMPLProgram;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-/**
- *
- * @author jean-paul
- */
+
 public class SMPL {
 
     /**

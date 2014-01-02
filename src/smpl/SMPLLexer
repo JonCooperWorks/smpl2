@@ -44,15 +44,19 @@ cc = \b\f{nl}
 
 ws = \t" "\r\n
 
-alpha = [a-zA-Z]
-
-digit = [0-9]
-
 hxdigit = [0-9a-fA-F]
 
-start = [^0-9\(\)\[\]\{\}\'\"\\:]
+alpha = [a-zA-Z]
 
-valid = {start}[0-9]#
+num = [0-9]
+
+alphanum = {alpha}|{num}
+
+specialchars = [#+-*.!]
+
+allchars={alphanum}|{specialchars}
+
+identifier = {alphanum}+{allchars}+
 
 %%
 
@@ -65,53 +69,52 @@ valid = {start}[0-9]#
 
 <YYINITIAL>     "/*"[^"*/"]*"*/"        { }
 
-<YYINITIAL>	[{ws}]+"+"[{ws}]+
+<YYINITIAL>	{ws}+"+"{ws}+
 					{ return new Symbol(sym.PLUS); }
-<YYINITIAL>	[{ws}]+"-"[{ws}]+
+<YYINITIAL>	{ws}+"-"{ws}+
 					{ return new Symbol(sym.MINUS); }
-<YYINITIAL>	[{ws}]+"*"[{ws}]+
+<YYINITIAL>	{ws}+"*"{ws}+
 					{ return new Symbol(sym.MUL); }
-<YYINITIAL>	[{ws}]+/[{ws}]+		
+<YYINITIAL>	{ws}+"/"{ws}+		
 					{ return new Symbol(sym.DIV); }
-<YYINITIAL>	[{ws}]+%[{ws}]+		
+<YYINITIAL>	{ws}+"%"{ws}+		
 					{ return new Symbol(sym.MOD); }
 
-<YYINITIAL>	[{ws}]+:=[{ws}]+	{ return new Symbol(sym.ASSIGN); }
+<YYINITIAL>	{ws}+":="{ws}+	{ return new Symbol(sym.ASSIGN); }
 
-<YYINITIAL>	[{ws}]+&[{ws}]+		
+<YYINITIAL>	{ws}+"&"{ws}+		
 					{ return new Symbol(sym.BAND); }
-<YYINITIAL>	[{ws}]+|[{ws}]+		
+<YYINITIAL>	{ws}+"|"{ws}+		
 					{ return new Symbol(sym.BOR); }
-<YYINITIAL>	~[{ws}]+		
+<YYINITIAL>	"~"{ws}+		
 					{ return new Symbol(sym.BNOT); }
 
-<YYINITIAL>	[{ws}]+!=[{ws}]+
+<YYINITIAL>	{ws}+"!="{ws}+
 					{ return new Symbol(sym.NEQUAL); }
-<YYINITIAL>	[{ws}]+>=[{ws}]+		
+<YYINITIAL>	{ws}+">="{ws}+		
 					{ return new Symbol(sym.GEQUAL); }
-<YYINITIAL>	[{ws}]+<=[{ws}]+		
+<YYINITIAL>	{ws}+"<={"ws}+		
 					{ return new Symbol(sym.LEQUAL); }
-<YYINITIAL>	[{ws}]+>[{ws}]+		
+<YYINITIAL>	{ws}+">"{ws}+		
 					{ return new Symbol(sym.GTHAN); }
-<YYINITIAL>	[{ws}]+<[{ws}]+		
+<YYINITIAL>	{ws}+"<"{ws}+		
 					{ return new Symbol(sym.LTHAN); }
-<YYINITIAL>	[{ws}]+=[{ws}]+		
+<YYINITIAL>	{ws}+"="{ws}+		
 					{ return new Symbol(sym.EQUAL); }
 
-<YYINITIAL>	[{ws}]+and[{ws}]+		
+<YYINITIAL>	{ws}+"and"{ws}+		
 					{ return new Symbol(sym.LAND); }
-<YYINITIAL>	[{ws}]+or[{ws}]+		
+<YYINITIAL>	{ws}+"or"{ws}+		
 					{ return new Symbol(sym.LOR); }
-<YYINITIAL>	not[{ws}]+		
+<YYINITIAL>	"not"{ws}+		
 					{ return new Symbol(sym.LNOT); }
 
-<YYINITIAL>	[{ws}]+@[{ws}]+
+<YYINITIAL>	{ws}+"@"{ws}+
 					{ return new Symbol(sym.CONCAT); }
 
 
-<YYINITIAL>	#t                      { return new Symbol(sym.TRUE); }
-<YYINITIAL>	ELSE                    { return new Symbol(sym.TRUE); }
-<YYINITIAL>	#f                      { return new Symbol(sym.FALSE); }
+<YYINITIAL>	"#t"                      { return new Symbol(sym.TRUE); }
+<YYINITIAL>	"#f"                      { return new Symbol(sym.FALSE); }
 			
 <YYINITIAL>	";"                     { return new Symbol(sym.SEMI); }
 <YYINITIAL>	","                     { return new Symbol(sym.COMMA); }
@@ -123,8 +126,8 @@ valid = {start}[0-9]#
 <YYINITIAL>	":]"                    { return new Symbol(sym.VECRIGHT); }
 <YYINITIAL>	"["                     { return new Symbol(sym.LBRACKET); }
 <YYINITIAL>	"]"                     { return new Symbol(sym.RBRACKET); }
-<YYINITIAL>	#e                      { return new Symbol(sym.NIL); }
-<YYINITIAL>	:                       { return new Symbol(sym.COLON); }
+<YYINITIAL>	"#e"                     { return new Symbol(sym.NIL); }
+<YYINITIAL>	":"                       { return new Symbol(sym.COLON); }
 
 <YYINITIAL>	"proc"                    { return new Symbol(sym.PROC); }
 <YYINITIAL>	"call"                    { return new Symbol(sym.CALL); }
@@ -155,22 +158,23 @@ valid = {start}[0-9]#
 
 <YYINITIAL>	"be"                      { return new Symbol(sym.BE); }
 
-<YYINITIAL>	'                       { yybegin(YYCHAR); }
-<YYCHAR>	{alpha}|{digit}|\\(\\|n|r|f|)   { return new Symbol( sym.CHAR, yytext() ); }
-<YYCHAR>	'                       { yybegin(YYINITIAL); }
+<YYINITIAL> \"[^\"\\]*(\\.[^\"\\]*)*\" {
+                    return new Symbol(sym.STRING, yytext()
+                        .substring(1, yytext().length() - 1));
+                }
 
-<YYINITIAL>	\"\"                    { return new Symbol( sym.STRING, "" ); }
 
-<YYINITIAL>	\"                      { yybegin(YYSTRING); }
-<YYSTRING>	[^\"]*                  { return new Symbol( sym.STRING, yytext() ); }
-<YYSTRING>	\"                      { yybegin(YYINITIAL); }
+<YYINITIAL>	"'"(.|"\t"|"\n"|\\\\|"\f"|"\'")"'"	{
+                    return new Symbol(sym.CHAR, yytext()
+                        .substring(1, yytext().length() - 1));
+                 }
 
 <YYINITIAL>     "-"?[0-9]*"."[0-9]+     { return new Symbol( sym.DOUBLE, new Double( yytext() ) ); }
 <YYINITIAL>     "-"?[0-9]+"."[0-9]*     { return new Symbol( sym.DOUBLE, new Double( yytext() ) ); }
-<YYINITIAL>	#x{hxdigit}+            { return new Symbol( sym.HEX, Integer.parseInt( yytext().substring(2), 16 ) ); }
-<YYINITIAL>	#b(0|1)+                { return new Symbol( sym.BIN, Integer.parseInt( yytext().substring(2), 2 ) ); }
+<YYINITIAL>	"#x"{hxdigit}+            { return new Symbol( sym.HEX, Integer.parseInt( yytext().substring(2), 16 ) ); }
+<YYINITIAL>	"#b"(0|1)+                { return new Symbol( sym.BIN, Integer.parseInt( yytext().substring(2), 2 ) ); }
 <YYINITIAL>     "-"?[0-9]+              { return new Symbol( sym.INT, new Integer( yytext() ) ); }
 
-<YYINITIAL> #\\{hxdigit}{hxdigit}{hxdigit}{hxdigit} { return new Symbol(sym.CHAR, new Integer( yytext().substring(2) ).toString() ); }
+<YYINITIAL> "#\\"{hxdigit}{hxdigit}{hxdigit}{hxdigit} { return new Symbol(sym.CHAR, new Integer( yytext().substring(2) ).toString() ); }
 
-<YYINITIAL>  [0-9a-zA-Z"+""-""?""*""/""%""&""="">""<"\\"_"]+ { return new Symbol( sym.VARIABLE, yytext() ); }
+<YYINITIAL>  {identifier} { return new Symbol( sym.VARIABLE, yytext() ); }

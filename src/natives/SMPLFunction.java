@@ -4,13 +4,10 @@
  */
 package natives;
 
-import syntax.ASTNode;
+import ast.ASTNode;
 import java.util.ArrayList;
 
-/**
- *
- * @author jean-paul
- */
+
 public class SMPLFunction {
     String name;
     ArrayList<String> parameters;
