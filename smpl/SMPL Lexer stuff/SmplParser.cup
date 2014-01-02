@@ -1,0 +1,410 @@
+// -*- Mode: Java -*-
+package smpl.lang;
+
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+import smpl.sys.*;
+import smpl.database.*;
+import smpl.gui.*;
+import smpl.objects.*;
+import smpl.utils.*;
+import smpl.oop.*;
+
+/* Preliminaries to set up and use the scanner.  */
+parser code {:
+    SmplLexer lexer;
+    String filename = null;
+    InputStream in = null;
+    String[] collector = new String[100];
+
+    public SmplParser(String file) throws FileNotFoundException {
+	filename = file;
+	in = new FileInputStream(file);
+    }
+
+    public SmplParser(InputStream is) {
+	filename = "stdin";
+	in = is;
+    }
+
+    public void report_error(String message, Object info) {
+	System.err.println(message + info);
+    }
+
+    public void syntax_error(Symbol cur_token) {
+	System.err.print(filename + ":" + lexer.getLine() +
+			 " near char " + lexer.getChar() + ": ");
+	report_error("Syntax error while reading: ", cur_token);
+	System.err.println ("Last token read is " +
+			    lexer.getText());
+    }
+	:};
+
+init with {:
+    // Create a lexer that reads from specified input stream
+    if (in == null)
+	in = System.in;
+    lexer = new SmplLexer(in);
+	:};
+scan with {:
+    try {
+	Symbol tok = lexer.next_token();
+//  		System.out.println(tok);
+	return tok;
+	// 	return lexer.next_token();
+    } catch (java.io.IOException ioe) {
+	System.err.println ("Error parsing " + filename);
+	System.err.println(ioe.getMessage());
+throw ioe;
+    }
+	:};
+
+/* Scanner tokens */
+
+/* Terminals */
+
+// container delimiters
+terminal VLBRACKET, VRBRACKET, LBRACKET, RBRACKET;
+terminal LPAREN, RPAREN, LBRACE, RBRACE;
+terminal OPENQUOTE, CLOSEQUOTE;
+terminal LCOMMENT, RCOMMENT;
+terminal NEW, CLASS,CONSTRUCTOR,SHARED,EXPORT,METHOD;
+
+// keywords:
+// builtin expressions
+terminal PAIR, CAR, CDR, LIST, SIZE, SUBSTR, CALL;
+terminal ISPAIR, ISEQV, ISEQ;
+
+// SMPL commands
+terminal PROC, LET, BE, DEF;
+
+// control commands
+terminal IF, THEN, ELSE, CASE, PRINT, PRINTLN, READ, READINT;
+terminal FOR,WHILE, BREAK;
+
+// special literals
+terminal SPACE, TAB, NEWLINE, CRETURN, FORMFEED;
+terminal TRUE, FALSE, NIL;
+
+// arithmetic operators:
+terminal PLUS, MINUS, UMINUS, MULTIPLY, DIVIDE, MODULO, POWER;
+
+terminal AND, OR, NOT;
+// bitwise comparison
+terminal BAND, BOR, BNOT;
+//  Logical comparison
+terminal LT, LE, GT, GE, EQ, NE;
+// separators
+terminal SEMI, COLON, COMMA;
+
+terminal ASSIGN, CONCAT, DOT,TRY,CATCH,START,THREAD;
+
+
+// terminals with values
+terminal Integer INTEGER;
+terminal Integer HEXINT;
+terminal Integer BININT;
+terminal Double DOUBLE;
+terminal String CHAR;
+terminal String STRING;
+
+/* Non terminals */
+non terminal SmplProgram program;
+non terminal SmplExp exp,classExp;
+non terminal ArrayList expList;
+non terminal ArrayList expListA;
+non terminal ArrayList expListB;
+non terminal ExpSeq expTuple;
+
+non terminal ArrayList statementList, classListHelper,classList;
+
+non terminal SmplExp vectorExp;
+non terminal ArrayList vectorSeq;
+non terminal ArrayList vectorSeqA;
+non terminal SmplExp vecAcc;
+
+non terminal SmplExp letExp;
+non terminal LetSeq letSeq;
+non terminal ArrayList letSeqA;
+
+non terminal SmplExp caseExp;
+non terminal SmplCaseSeq caseList;
+non terminal ArrayList caseListA;
+
+non terminal SmplExp builtinExp;
+non terminal SmplExp controlExp;
+non terminal SmplExp extendExp;
+non terminal SmplExp funExp;
+
+non terminal SmplExp arithRelExp;
+non terminal SmplExp arithRelTerm;
+non terminal SmplExp arithRelFactor;
+non terminal SmplExp relExp;
+non terminal SmplExp relTerm;
+non terminal SmplExp arithExp;
+non terminal SmplExp arithTerm;
+non terminal SmplExp arithFactor;
+non terminal SmplExp arithBase;
+non terminal SmplExp arithAtom;
+non terminal SmplExp charExp,classDef;
+non terminal String stringList;
+
+non terminal SmplExp varList;
+non terminal SmplExp forExp;
+
+non terminal SmplExp optArg;
+non terminal SmplExp optElse;
+non terminal SmplExp optElseA;
+
+non terminal empty;
+
+/* Grammar rules */
+
+start with program;
+
+vecAcc ::=
+    IDENT:i {: RESULT = new SmplVar(i); :} |
+    LPAREN exp:e RPAREN {: RESULT = e; :};
+
+program ::=
+    statementList:ss {: RESULT = new SmplProgram(new SmplSeq(ss)); :};
+
+exp ::=
+    arithRelExp:a {: RESULT = a; :} |
+    builtinExp:b {: RESULT = b; :} |
+    controlExp:c {: RESULT = c; :} |
+    extendExp:e {: RESULT = e; :}|
+    classDef:cd {: RESULT = cd;  :}|
+    classExp:cExp {: RESULT = cExp; :};
+    
+builtinExp ::=
+    PAIR LPAREN exp:e1 COMMA exp:e2 RPAREN {: RESULT = new CmdPair(e1, e2); :} |
+    CAR LPAREN exp:e RPAREN {: RESULT = new SmplCar(e); :} |
+    CDR LPAREN exp:e RPAREN {: RESULT = new SmplCdr(e); :} |
+    LIST LPAREN expList:es RPAREN {: RESULT = new SmplList(es); :} |
+    LBRACKET expList:es RBRACKET{: RESULT = new SmplList(es); :} |
+    VLBRACKET vectorSeq:vs VRBRACKET {: RESULT = new SmplCVector(vs); :} |
+    vecAcc:v LBRACKET exp:e RBRACKET {: RESULT = new SmplVecAcc(v, e); :}|
+    SIZE LPAREN exp:e RPAREN {: RESULT = new SmplSize(e); :} |
+    ISPAIR LPAREN exp:e RPAREN {: RESULT = new SmplIsPair(e); :} |
+    ISEQV LPAREN exp:e1 COMMA exp:e2 RPAREN {: RESULT = new SmplIsEqv(e1, e2, true); :} |
+    ISEQ LPAREN exp:e1 COMMA exp:e2 RPAREN {: RESULT = new SmplIsEqv(e1, e2); :} |
+    SUBSTR LPAREN exp:e1 COMMA exp:e2 COMMA exp:e3 RPAREN {: RESULT = new SmplSubstr(e1, e2, e3); :} |
+    CALL LPAREN exp:e1 COMMA exp:e2 RPAREN {: RESULT = new SmplProcCall(e1, e2, true); :};
+
+funExp ::=
+    LPAREN exp:e RPAREN {: RESULT = e; :} |
+    IDENT:i {: RESULT = new SmplVar(i); :};
+
+controlExp ::=
+    PROC IDENT:i exp:e {: RESULT = new SmplProcDef(new SmplVar(i), e); :} |
+    PROC LPAREN expList:es optArg:a RPAREN exp:e {: RESULT = new SmplProcDef(new ExpSeq(es), a, e); :} |
+    DEF IDENT:i exp:e {: RESULT = new SmplDef(new SmplVar(i), e, true); :} |
+    varList:vs ASSIGN exp:e {: RESULT = new SmplDef(vs, e); :} |
+    PRINT LPAREN exp:e RPAREN {: RESULT = new SmplPrint(e); :} |
+    PRINTLN LPAREN exp:e RPAREN {: RESULT = new SmplPrint(e, true); :} |
+    LET LPAREN letSeq:ls RPAREN exp:e {: RESULT = new SmplLet(ls, e); :} |
+    IF exp:e1 THEN exp:e2 optElse:o {: RESULT = new SmplIf(e1, e2,o); :} |
+  //  IF exp:e1 THEN exp:e2 {: RESULT = new SmplIf(e1, e2,new SmplBool(false); :} |
+    CASE LBRACE caseList:cs RBRACE {: RESULT = new SmplCase(cs); :} |
+    LBRACE statementList:ss RBRACE {: RESULT = new SmplSeq(ss); :} |
+    expTuple:es {: RESULT = es; :} |
+    READ LPAREN RPAREN {: RESULT = new SmplRead(); :} |
+    READINT LPAREN RPAREN {: RESULT = new SmplRead(true); :};
+
+
+
+extendExp ::=
+    FOR LPAREN forExp:e1 SEMI forExp:e2 SEMI forExp:e3 RPAREN exp:e4 {: RESULT = new SmplForExp(e1, e2, e3, e4); :} |
+    WHILE LPAREN exp:e1 RPAREN exp:e2 {: RESULT = new SmplWhile(e1, e2); :} |
+    BREAK {: RESULT = new SmplBreak(); :}|
+    TRY LBRACE statementList:tl RBRACE CATCH LPAREN RPAREN LBRACE statementList:cl RBRACE{: RESULT = new TryBlock(tl,cl); :} |
+    THREAD IDENT:var LBRACE statementList:body RBRACE {: RESULT = new SmplThread(var,body); :}|
+    START IDENT:name {: RESULT = new SmplThreadCall(name) ; :}|
+    DISPLAYWINDOW LPAREN IDENT:name  RPAREN {: RESULT = new DisplayWindow(name); :}|
+    DISPLAYPOPUP  LPAREN IDENT:title COMMA exp:info RPAREN {: RESULT = new DisplayPopUp(title, info) ; :}|
+    ADDFILEBAR  LPAREN IDENT RPAREN {: :}|
+    ADDTEXTAREA  LPAREN IDENT:name COMMA IDENT:window RPAREN {: RESULT = new AddTextArea(name,window); :}|
+    ADDBUTTON    LPAREN IDENT COMMA IDENT RPAREN{: :}|
+    CREATEWINDOW  LPAREN IDENT:title RPAREN {: RESULT = new CreateWindow(title); :}|
+    APPEND  LPAREN exp:e COMMA IDENT:textA RPAREN {: RESULT = new SmplAppend(e,textA); :}|
+    SLEEP   LPAREN INTEGER:value RPAREN{: RESULT = new SmplSleep(value);  :}|
+    DATABASECONNECT LPAREN exp:e1 COMMA exp:e2 COMMA exp:e3 COMMA exp:e4 COMMA exp:e5 COMMA exp:e6 RPAREN{: RESULT = new SmplDatabaseConnect(e1,e2,e3,e4,e5,e6); :}|
+    DATABASEEXEC LPAREN exp:e1 COMMA exp:e2 RPAREN {: RESULT = new SmplDatabaseExec(e1,e2); :}|
+    DATABASERESULT LPAREN exp:e1 COMMA exp:e2 COMMA exp:e3 RPAREN{: RESULT = new SmplDatabaseResult(e1,e2,e3); :};
+
+varList ::=
+    ID:i {: RESULT = new SmplVar(i); :} |
+    expTuple:es {: RESULT = es; :};
+
+expTuple ::=
+    LPAREN exp:e1 COMMA exp:e2 expListB:es RPAREN {: es.add(0, e2);
+								    es.add(0, e1);
+								    RESULT = new ExpSeq(es);
+								:};
+
+statementList ::=
+    statementList:ss exp:e SEMI {: ss.add(e); RESULT = ss; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+expList ::=
+    expListA:es exp:e {: es.add(e); RESULT = es; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+expListA ::=
+    expListA:es exp:e COMMA {: es.add(e); RESULT = es; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+expListB ::=
+    COMMA exp:e expListB:es {: es.add(0, e); RESULT = es; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+vectorSeq ::=
+    vectorSeqA:vs vectorExp:e {: vs.add(e); RESULT = vs; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+vectorSeqA ::=
+    vectorSeqA:vs vectorExp:e COMMA {: vs.add(e); RESULT = vs; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+vectorExp ::=
+    exp:e {: RESULT = new SmplSubVec(e); :} |
+    exp:e1 COLON exp:e2 {: RESULT = new SmplSubVec(e1, e2); :};
+
+letSeq ::=
+    letSeqA:ls letExp:e {: ls.add(e); RESULT = new LetSeq(ls); :};
+
+letSeqA ::=
+    letSeqA:ls letExp:e COMMA {: ls.add(e); RESULT = ls; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+letExp ::=
+    ID:i BE exp:e {: RESULT = new ExpLet(new SmplVar(i), e); :};
+    
+optArg ::=
+    DOT ID:i {: RESULT = new SmplVar(i); :} |
+    empty {: RESULT = null; :};
+
+optElse ::=
+    ELSE exp:e {: RESULT = e; :} |
+empty{: RESULT = new SmplBool(false); :};
+
+caseList ::=
+    caseListA:cs caseExp:e optElseA:o {:
+				       cs.add(e);
+				       if (o != null) cs.add(o);
+				       RESULT = new SmplCaseSeq(cs);
+				       :} |
+    empty {: RESULT = new SmplCaseSeq(new ArrayList()); :};
+
+caseListA ::=
+    caseListA:cs caseExp:e COMMA {: cs.add(e); RESULT = cs; :} |
+    empty {: RESULT = new ArrayList(); :};
+
+caseExp ::=
+    exp:e1 COLON exp:e2 {: RESULT = new ExpCase(e1, e2); :};
+
+optElseA ::=
+    COMMA ELSE COLON exp:e {: RESULT = new ExpCase(new SmplLit(true), e); :} |
+    empty {: RESULT = null; :};
+
+forExp ::=
+    exp:e {: RESULT = e; :} |
+    empty {: RESULT = new SmplLit(true); :};
+
+arithRelExp ::=
+    arithRelExp:e OR arithRelTerm:t {: RESULT =  new SmplOr(e, t); :} |
+    arithRelTerm:t {: RESULT = t; :};
+
+arithRelTerm ::=
+    arithRelTerm:t AND arithRelFactor:f {: RESULT = new SmplLogAnd(t, f); :} |
+    arithRelFactor:f {: RESULT = f; :};
+
+arithRelFactor ::=
+    NOT relExp:e {: RESULT = new SmplNot(e); :} |
+    relExp:e {: RESULT = e; :};
+
+relExp ::=
+    relExp:e LT relTerm:t {: RESULT = new SmplLThan(e, t); :} |
+    relExp:e LE relTerm:t {: RESULT = new SmplLEqual(e, t); :} |
+    relExp:e GT relTerm:t {: RESULT = new SmplGThan(e, t); :} |
+    relExp:e GE relTerm:t {: RESULT = new SmplGEqual(e, t); :} |
+    relExp:e EQ relTerm:t {: RESULT = new SmplEqual(e, t); :} |
+    relExp:e NE relTerm:t {: RESULT = new SmplNotEqual(e, t); :} |
+    TRUE {: RESULT = new SmplLit(true); :} |
+    FALSE {: RESULT = new SmplLit(false); :} |
+    relTerm:t {: RESULT = t; :};
+
+relTerm ::=
+    relTerm:t BAND arithExp:e {: RESULT = new SmplBitOr(t, e); :} |
+    relTerm:t BOR arithExp:e {: RESULT = new SmplBitAnd(t, e); :} |
+    arithExp:e {: RESULT = e; :};
+
+arithExp ::=
+    arithExp:e PLUS arithTerm:t {: RESULT = new SmplAdd(e, t); :} |
+    arithExp:e MINUS arithTerm:t {: RESULT = new SmplMinus(e, t); :} |
+    arithTerm:t {: RESULT = t; :}; 
+
+arithTerm ::=
+    arithTerm:t MULTIPLY arithFactor:f {: RESULT = new SmplMul(t, f); :} |
+    arithTerm:t DIVIDE arithFactor:f {: RESULT = new SmplDiv(t, f); :} |
+    arithTerm:t MODULO arithFactor:f {: RESULT = new SmplMod(t, f); :} |
+    arithTerm:t CONCAT arithFactor:f {: RESULT = new SmplConcat(t, f); :} |
+    arithFactor:f {: RESULT = f; :};
+
+arithFactor ::=
+    arithBase:b POWER arithFactor:f {: RESULT = new SmplExpo(b, f); :} |
+    arithBase:b {: RESULT = b; :};
+
+arithBase ::=
+    BNOT arithAtom:a {: RESULT = new SmplBitNot(a); :} |
+    arithAtom:a {: RESULT = a; :};
+
+arithAtom ::=
+    funExp:f LPAREN expList:es RPAREN {: RESULT = new SmplProcCall(f, new ExpSeq(es)); :}|
+    LPAREN UMINUS arithExp:e RPAREN {: RESULT = new SmplNeg(e); :} |
+    INTEGER:i {: RESULT = new SmplLit(i); :} |
+    HEXINT:h {: RESULT = new SmplLit(h, SmplNum.HEX); :} |
+    BININT:b {: RESULT = new SmplLit(b, SmplNum.BIN); :} |
+    DOUBLE:d {: RESULT = new SmplLit(d); :} |
+    charExp:c {: RESULT = c; :} |
+    ID:i {: RESULT = new SmplVar(i); :} |
+    NIL {: RESULT = new SmplLit(); :} |
+    OPENQUOTE stringList:ss CLOSEQUOTE {: RESULT = new SmplLit(ss); :} |
+    LPAREN exp:e RPAREN {: RESULT = e; :};
+
+stringList ::=
+    stringList:ss STRING:s {: RESULT = (ss + s); :} |
+    empty {: RESULT = ""; :};
+    
+charExp ::=
+    CHAR:c {: RESULT = new SmplLit(new SmplChar(c)); :} |
+    NEWLINE {: RESULT = new SmplLit(SmplChar.NEWLINE); :} |
+    SPACE {: RESULT = new SmplLit(SmplChar.SPACE); :} |
+    TAB {: RESULT = new SmplLit(SmplChar.TAB); :} |
+    CRETURN {: RESULT = new SmplLit(SmplChar.CRETURN); :} |
+    FORMFEED {: RESULT = new SmplLit(SmplChar.FORMFEED); :};
+
+
+classDef::= CLASS LPAREN ID:i RPAREN LBRACE classList:cl RBRACE {:RESULT = new SmplClass(cl,i); :} |
+            CLASS LPAREN  RPAREN LBRACE classList:cl RBRACE {:RESULT = new SmplClass(cl); :} ;
+
+classList::= statementList:sl classListHelper:clh {:  clh.add(sl) ; RESULT = clh;  :};
+             
+                
+
+
+classListHelper::=     empty{: RESULT = new ArrayList(); :};
+
+classExp ::=       NEW ID:var LPAREN expList:li RPAREN  {: RESULT = new SmplNew(var,li); :} |
+                   LPAREN exp:e1 DOT ID:v LPAREN expList:ex RPAREN RPAREN{:RESULT=new SmplMethodCall(e1,v,ex); :}|
+                   METHOD LPAREN expList:pl RPAREN statementList:st  {: RESULT = new SmplMethod(pl,st); :}|
+                   CONSTRUCTOR LPAREN expList:pl RPAREN statementList:st  {: 
+                       RESULT  = new  SmplConstr (new ExpSeq(pl),new ExpSeq(st)); :} |
+                   EXPORT LPAREN expList:pl RPAREN    {: RESULT = new SmplExport(pl); :}|
+                   SHARED LBRACE statementList:st RBRACE   {: RESULT= new SmplShared(st);:};
+
+
+empty ::=;
+

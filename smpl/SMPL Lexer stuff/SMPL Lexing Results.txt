@@ -1,0 +1,153 @@
+SMPL Lexer Results from CMD Prompt.
+
+
+
+
+Microsoft Windows [Version 6.0.6002]
+Copyright (c) 2006 Microsoft Corporation.  All rights reserved.
+
+//CHANGE THE DIRECTORY
+
+
+C:\Users\lorriann>cd \Users\lorriann\smpl
+
+C:\Users\lorriann\smpl>java JLex\Main.java
+Exception in thread "main" java.lang.NoClassDefFoundError: JLex\Main/java
+Caused by: java.lang.ClassNotFoundException: JLex\Main.java
+        at java.net.URLClassLoader$1.run(Unknown Source)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(Unknown Source)
+        at java.lang.ClassLoader.loadClass(Unknown Source)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Unknown Source)
+        at java.lang.ClassLoader.loadClass(Unknown Source)
+        at java.lang.ClassLoader.loadClassInternal(Unknown Source)
+Could not find the main class: JLex\Main.java.  Program will exit.
+
+C:\Users\lorriann\smpl>javac JLex\Main.java
+Note: JLex\Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+
+//TEST FOR JAVA CUP AVAILABILITY
+
+C:\Users\lorriann\smpl>java -cp \Users\lorriann\smpl\java_cup java_cup.Main bla
+.cup
+
+Unable to open "blah.cup" for input
+
+Usage: java_cup [options] [filename]
+  and expects a specification file on standard input if no filename is given.
+  Legal options include:
+    -package name  specify package generated classes go in [default none]
+    -parser name   specify parser class name [default "parser"]
+    -symbols name  specify name for symbol constant class [default "sym"]
+    -interface     put symbols in an interface, rather than a class
+    -nonterms      put non terminals in symbol constant class
+    -expect #      number of conflicts expected/allowed [default 0]
+    -compact_red   compact tables by defaulting to most frequent reduce
+    -nowarn        don't warn about useless productions, etc.
+    -nosummary     don't print the usual summary of parse states, etc.
+    -nopositions   don't propagate the left and right token position values
+    -noscanner     don't refer to java_cup.runtime.Scanner
+    -progress      print messages to indicate progress of the system
+    -time          print time usage summary
+    -dump_grammar  produce a human readable dump of the symbols and grammar
+    -dump_states   produce a dump of parse state machine
+    -dump_tables   produce a dump of the parse tables
+    -dump          produce a dump of all of the above
+    -version       print the version information for CUP and exit
+
+
+//TEST FOR JLEX AVAILABILITY
+
+C:\Users\lorriann\smpl>java -cp \Users\lorriann\smpl JLex.Main blah.lex
+Exception in thread "main" java.io.FileNotFoundException: blah.lex (The system c
+annot find the file specified)
+        at java.io.FileInputStream.open(Native Method)
+        at java.io.FileInputStream.<init>(Unknown Source)
+        at java.io.FileInputStream.<init>(Unknown Source)
+        at java.io.FileReader.<init>(Unknown Source)
+        at JLex.CLexGen.<init>(Main.java:4859)
+        at JLex.Main.main(Main.java:3843)
+
+
+//LEXING SMPL LEXER-DEBUGGING
+
+
+//ERROR 1
+C:\Users\lorriann\smpl>java JLex.Main SmplLexer
+Processing first section -- user code.
+Processing second section -- JLex declarations.
+Processing third section -- lexical rules.
+Creating NFA machine representation.
+Error: Undefined macro "int".
+Error: Parse error at line 90.
+Description: Macro does not exist.
+Parse error.
+
+
+//ERROR 2
+C:\Users\lorriann\smpl>java JLex.Main SmplLexer
+Processing first section -- user code.
+Processing second section -- JLex declarations.
+Processing third section -- lexical rules.
+Creating NFA machine representation.
+Error: Parse error at line 100.
+Description: ^ must be at start of expression or after [.
+Parse error.
+
+//ERROR 3
+C:\Users\lorriann\smpl>java JLex.Main SmplLexer
+Processing first section -- user code.
+Processing second section -- JLex declarations.
+Processing third section -- lexical rules.
+Creating NFA machine representation.
+Error: Parse error at line 209.
+Description: + ? or * must follow an expression or subexpression.
+Parse error.
+
+//ERROR4
+C:\Users\lorriann\smpl>java JLex.Main SmplLexer
+Processing first section -- user code.
+Processing second section -- JLex declarations.
+Processing third section -- lexical rules.
+Creating NFA machine representation.
+Error: Parse error at line 209.
+Description: Missing [ in character class.
+Parse error.
+
+//ERROR 5
+C:\Users\lorriann\smpl>java JLex.Main SmplLexer
+Processing first section -- user code.
+Processing second section -- JLex declarations.
+Processing third section -- lexical rules.
+Creating NFA machine representation.
+Error: Undefined macro "string_text".
+Error: Parse error at line 211.
+Description: Macro does not exist.
+Parse error.
+
+//FINAL
+C:\Users\lorriann\smpl>java JLex.Main SmplLexer
+Processing first section -- user code.
+Processing second section -- JLex declarations.
+Processing third section -- lexical rules.
+Creating NFA machine representation.
+NFA comprised of 753 states.
+Working on character classes.:::.:.:......::::.:.:::.:..:.........:....:.:....::
+.......:..::..:......::....:::.:.::.:.:.....::.::.....:::.:..::::....:..........
+...:......:..::...:....................:...........:............................
+........:........:..........................:............:.......:.........:...:
+......:....................................:..............:...........:.........
+.:............................:.........:.::..:....::.....
+NFA has 74 distinct character classes.
+Creating DFA transition table.
+Working on DFA states...........................................................
+................................................................................
+................................................................................
+................................................................................
+......................
+Minimizing DFA transition table.
+310 states after removal of redundant states.
+Outputting lexical analyzer code.
+

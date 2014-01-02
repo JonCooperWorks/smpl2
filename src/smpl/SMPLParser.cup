@@ -1,0 +1,287 @@
+
+package smpl;
+
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+import astreps.*;
+
+/* Preliminaries to set up and use the scanner.  */
+parser code {:
+		SMPLLexer lexer;
+
+		public SMPLParser(SMPLLexer l) {
+		    // As of CUP v0.11, need to pass Lexer to superclass
+		    super(l);
+		    lexer = l;
+		}
+
+		public void report_error(String message, Object info) {
+		    System.err.println(message);
+		}
+
+		public void syntax_error(Symbol cur_token) {
+		    System.err.print("Line " + lexer.getLine() +
+				     " near char " + lexer.getChar() + ": ");
+		    report_error("Syntax error", cur_token);
+		    System.err.println ("Encountered " + cur_token +
+					" just before: " +
+					 lexer.getText());
+		}
+	    :};
+
+init with {:
+
+	  :};
+scan with {:
+		try {
+		    return lexer.next_token();
+		} catch (java.io.IOException ioe) {
+		    System.out.println("Line " + lexer.getLine() + ", pos " +
+				       lexer.getChar() +
+				       ": Unrecognised token");
+		    System.out.println(ioe.getMessage());
+		    throw ioe;
+		}
+	  :};
+
+/* Terminals (tokens returned by the scanner). */
+// keywords
+
+// special symbols
+terminal LPAREN, RPAREN, SEMI, COMMA, LBRACE, RBRACE;
+terminal VECLEFT, VECRIGHT, LBRACKET, RBRACKET, COLON;
+
+terminal NIL;
+
+terminal boolean TRUE, FALSE;
+
+// arithmetic operators
+terminal PLUS, MINUS, MUL, DIV, MOD, ASSIGN;
+terminal BAND, BOR, BNOT;
+terminal NEQUAL, GEQUAL, LEQUAL, GTHAN, LTHAN, EQUAL;
+terminal LAND, LOR, LNOT, CONCAT;
+
+// keywords
+terminal PROC, DEF, CALL, LET, IF, THEN, ELSE;
+terminal CASE, PRINT, PRINTLN, READ, READINT, LAZY;
+
+terminal PAIR, CAR, CDR, PAIRQ, LIST;
+terminal SIZE;
+terminal EQVQ, EQUALQ;
+terminal SUBSTR;
+
+terminal Float DOUBLE;
+terminal Integer HEX, BIN, INT;
+
+terminal String CHAR;
+terminal String STRING;
+terminal String VARIABLE;
+
+terminal BE;
+
+/* Non terminals */
+
+non terminal SMPLProgram program;
+non terminal ASTNode stmt;
+non terminal ASTSequence stmtList;
+
+non terminal ASTNode expression, term, factor, term1, term2, factor2;
+non terminal ASTNode term3, term4, term5, vecExpression;
+non terminal definition, assignment;
+non terminal ifStatement;
+
+terminal WS;
+
+non terminal ASTNode functionCall, funcCallParam, functionDef;
+non terminal expressionList, expressionList2;
+non terminal vectorExpList, variableList, variableList2, multipleAssignment;
+non terminal caseStmt, caseExpList, caseExp;
+
+non terminal paramList;
+non terminal String param;
+
+non terminal lazyExp;
+non terminal printStatement, printlnStatement;
+
+non terminal readStatement, readIntStatement;
+
+non terminal pairStatement;
+
+non terminal binding, bindingList;
+
+non terminal empty;
+
+/* Grammar rules */
+
+program ::= stmtList:s {: RESULT = new SMPLProgram(s); :};
+
+stmtList ::= stmtList:seq stmt:s {: RESULT = seq.add(s); :} |
+             stmt:s {: RESULT = new ASTSequence(s); :};
+
+stmt ::= expression:e SEMI {: RESULT = e; :} |
+         definition:d SEMI {: RESULT = (ASTNode)d; :} |
+         assignment:a SEMI {: RESULT = (ASTNode)a; :} |
+         multipleAssignment:m SEMI {: RESULT = (ASTNode)m; :} |
+         
+         caseStmt:cs {: RESULT = (ASTNode)cs; :};
+         
+expression ::= expression:e LOR term1:t {: RESULT = new ASTBoOrExp( e, t ); :} |
+               LBRACE stmtList:e RBRACE {: RESULT = e; :} |
+               term1:t {: RESULT = t; :};
+
+term1 ::= term1:t1 LAND term2:t2 {: RESULT = new ASTBoAndExp(t1, t2); :} |
+          term2:t {: RESULT = t; :};
+
+term2 ::= LNOT term3:t1 {: RESULT = new ASTBoNotExp(t1); :} |
+          term3:t {: RESULT = t; :};
+
+term3 ::= term3:t1 NEQUAL term4:t2 {: RESULT = new ASTNmNotEqlExp(t1, t2); :} |
+          term3:t1 GEQUAL term4:t2 {: RESULT = new ASTNmGEqlExp(t1, t2); :} |
+          term3:t1 LEQUAL term4:t2 {: RESULT = new ASTNmLEqlExp(t1, t2); :} |
+          term3:t1 GTHAN  term4:t2 {: RESULT = new ASTNmGrtrExp(t1, t2); :} |
+          term3:t1 LTHAN  term4:t2 {: RESULT = new ASTNmLessExp(t1, t2); :} |
+          term3:t1 EQUAL  term4:t2 {: RESULT = new ASTNmEqlExp(t1, t2); :} |
+          term4:t {: RESULT = t; :};
+
+term4 ::= term4:t1 BAND term5:t2 {: RESULT = new ASTBitAndExp(t1, t2); :} |
+          term4:t1 BOR  term5:t2 {: RESULT = new ASTBitOrExp(t1, t2); :} |
+          term5:t {: RESULT = t; :};
+
+term5 ::= term5:t1 PLUS  term:t2 {: RESULT = new ASTNmAddExp(t1, t2); :} |
+          term5:t1 MINUS term:t2 {: RESULT = new ASTNmSubExp(t1, t2); :} |
+          term5:t1 CONCAT term:t2 {: RESULT = new ASTListConcatExp(t1, t2); :} |
+          term:t {: RESULT = t; :};
+
+term ::= term:t MUL factor2:f {: RESULT = new ASTNmMulExp(t, f); :} |
+         term:t DIV factor2:f {: RESULT = new ASTNmDivExp(t, f); :} |
+         term:t MOD factor2:f {: RESULT = new ASTNmModExp(t, f); :} |
+         factor2:f {: RESULT = f; :};
+
+
+factor2 ::= BNOT factor2:f {: RESULT = new ASTBoNotExp( f ); :} |
+            factor:f {: RESULT = f; :};
+
+factor ::= VARIABLE:v {: RESULT = new ASTIdExp( v ); :} |
+           DOUBLE:d {: RESULT = new ASTFloatExp( d.floatValue() ); :} |
+           STRING:s {: RESULT = new ASTStringExp( s ); :} |
+           CHAR:c {: RESULT = new ASTStringExp( c ); :} |
+           HEX:h {: RESULT = new ASTIntExp( h ); :} |
+           BIN:b {: RESULT = new ASTIntExp( b ); :} |
+           INT:i {: RESULT = new ASTIntExp( i ); :} |
+           TRUE {: RESULT = new ASTBooleanExp( true ); :} |
+           FALSE {: RESULT = new ASTBooleanExp( false ); :} |
+           
+           ifStatement:i SEMI {: RESULT = (ASTNode)i; :} |
+           functionDef:fd {: RESULT = fd; :} |
+           
+           functionCall:fc {: RESULT = fc; :} |
+           readStatement:r {: RESULT = (ASTNode)r; :} |
+           readIntStatement:r {: RESULT = (ASTNode)r; :} |
+           pairStatement:p {: RESULT = (ASTNode)p; :} |
+           CAR LPAREN expression:e RPAREN {: RESULT = new ASTCarExp(e); :} |
+           CDR LPAREN expression:e RPAREN {: RESULT = new ASTCdrExp(e); :} |
+           PAIRQ LPAREN expression:e RPAREN {: RESULT = new ASTPairQExp(e); :} |
+           LIST LPAREN expressionList:elist RPAREN {: RESULT = new ASTListExp((ArrayList<ASTNode>)elist); :} |
+           SIZE LPAREN expression:e RPAREN {: RESULT = new ASTSizeExp(e); :} |
+           LBRACKET expressionList2:elist RBRACKET {: RESULT = new ASTListExp((ArrayList<ASTNode>)elist); :} |
+           EQVQ LPAREN expression:e1 COMMA expression:e2 RPAREN {: RESULT = new ASTEqvExp(e1, e2); :} |
+           EQUALQ LPAREN expression:e1 COMMA expression:e2 RPAREN {: RESULT = new ASTEqualExp(e1, e2); :} |
+           SUBSTR LPAREN expression:e1 COMMA expression:e2 COMMA expression:e3 RPAREN {: RESULT = new ASTSubstrExp(e1, e2, e3); :} |
+           VECLEFT vectorExpList:vel VECRIGHT {: RESULT = new ASTVectorListExp( (ArrayList<ASTNode>)vel ); :} |
+           printStatement:p {: RESULT = (ASTNode)p; :} |
+           printlnStatement:p {: RESULT = (ASTNode)p; :} |
+           LAZY LPAREN expression:e RPAREN {: RESULT = new ASTLazyExp(e); :} |
+
+           LET LPAREN bindingList:bl RPAREN expression:e SEMI {: RESULT = new ASTFunDefExp( (ArrayList<ASTNode>)bl, e ); :} |
+
+           
+           LPAREN expression:e RPAREN {: RESULT = e; :};
+           
+functionDef ::= PROC LPAREN paramList:p RPAREN stmtList:s {: RESULT = new ASTFunDefExp( "function", (ArrayList<String>)p, s ); :};
+
+paramList ::= paramList:pl COMMA param:p {: ((ArrayList<String>)pl).add(p); RESULT = pl; :} |
+
+              param:p {: 
+                            ArrayList<String> lst = new ArrayList<String>();
+                            lst.add( p );
+                            RESULT = lst;
+                      :} |
+
+              empty {: RESULT = new ArrayList<String>(); :};
+
+param ::= VARIABLE:v {: RESULT = v; :};
+
+
+functionCall ::= CALL LPAREN expression:funcExp COMMA expression:param RPAREN {: RESULT = new ASTFunCallExp( funcExp, param ); :} |
+                 
+                 LPAREN expression:func RPAREN LPAREN expressionList:param RPAREN {: RESULT = new ASTFunCallExp( func, (ArrayList<ASTNode>)param ); :};
+
+expressionList ::= expressionList2:e {: RESULT = e; :} | empty {: RESULT = new ArrayList<ASTNode>(); :};
+
+expressionList2 ::= expressionList2:el COMMA expression:e {: RESULT = el; ((ArrayList<ASTNode>)el).add(e); :} |
+
+                      expression:e {: 
+                                        ArrayList<ASTNode> lst = new ArrayList<ASTNode>();
+                                        lst.add( (ASTNode)e );
+                                        RESULT = lst;
+                                   :};
+
+vecExpression ::= expression:e {: RESULT = e; :} |
+                  expression:size COLON expression:func {: RESULT = new ASTVecExp( size, func ); :};
+
+vectorExpList ::= vectorExpList:vel COMMA vecExpression:e {: RESULT = vel; ((ArrayList<ASTNode>)vel).add((ASTNode)e); :} |
+                  vecExpression:e {: 
+                                        ArrayList<ASTNode> lst = new ArrayList<ASTNode>();
+                                        lst.add( (ASTNode)e );
+                                        RESULT = lst;
+                                   :};
+
+ifStatement ::= IF expression:cond THEN expression:exp {: RESULT = new ASTIfExp( cond, exp, null ); :} |
+                IF expression:cond THEN expression:exp ELSE expression:elseExp {: RESULT = new ASTIfExp( cond, exp, elseExp ); :};
+
+printStatement ::= PRINT LPAREN expression:e RPAREN {: RESULT = new ASTPrintExp( e, false ); :};
+printlnStatement ::= PRINTLN LPAREN expression:e RPAREN {: RESULT = new ASTPrintExp( e, true ); :};
+
+readStatement ::= READ LPAREN empty RPAREN {: RESULT = new ASTReadExp(); :};
+readIntStatement ::= READINT LPAREN empty RPAREN {: RESULT = new ASTReadIntExp(); :};
+
+pairStatement ::= PAIR LPAREN expression:e1 COMMA expression:e2 RPAREN {: RESULT = new ASTPairExp( e1, e2 ); :};
+
+definition ::= DEF VARIABLE:v expression:e {: RESULT = new ASTDefine(v, e); :};
+
+assignment ::= VARIABLE:v ASSIGN expression:e {: RESULT = new ASTAssignExp( v, e ); :};
+
+multipleAssignment ::= variableList:vl ASSIGN expression:e {: RESULT = new ASTMulAssignExp( (ArrayList<String>)vl, e ); :};
+
+variableList ::= VARIABLE:v COMMA variableList2:vl {: RESULT = vl; ((ArrayList<String>)vl).add(0, v); :};
+
+variableList2 ::= variableList2:vl COMMA VARIABLE:v {: RESULT = vl; ((ArrayList<String>)vl).add(v);:} |
+                  VARIABLE:v {: 
+                                ArrayList<String> lst = new ArrayList<String>();
+                                lst.add( v );
+                                RESULT = lst;
+                             :};
+
+caseStmt ::= CASE LBRACE caseExpList:cel RBRACE {: RESULT = new ASTCaseStmtExp( (ArrayList<ASTNode>)cel); :};
+
+caseExpList ::= caseExpList:cel COMMA caseExp:e {: RESULT = cel; ((ArrayList<ASTNode>)cel).add((ASTNode)e); :} |
+                caseExp:e {: 
+                                ArrayList<ASTNode> lst = new ArrayList<ASTNode>();
+                                lst.add( (ASTNode)e );
+                                RESULT = lst;
+                          :};
+
+caseExp ::= expression:e1 COLON expression:e2 {: RESULT = new ASTCaseExp( e1, e2 ); :};
+
+binding ::= VARIABLE:v BE expression:e {: RESULT = new ASTAssignExp( v, e ); :};
+
+bindingList ::= bindingList:el COMMA binding:e {: RESULT = el; ((ArrayList<ASTNode>)el).add( (ASTNode)e ); :} |
+
+                binding:e {: 
+                                ArrayList<ASTNode> lst = new ArrayList<ASTNode>();
+                                lst.add( (ASTNode)e );
+                                RESULT = lst;
+                            :};
+
+empty ::= ;
