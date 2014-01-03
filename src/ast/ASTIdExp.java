@@ -4,7 +4,7 @@
  */
 package ast;
 
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 public class ASTIdExp extends ASTNode{
 
@@ -13,7 +13,7 @@ public class ASTIdExp extends ASTNode{
     }
     
     @Override
-    public <S, T> T visit(Visitor<S, T> visitor, S state) {
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state) {
         return visitor.visitID(this, state);
     }
 }

@@ -7,7 +7,7 @@ package ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 
 public abstract class ASTNode {
@@ -55,7 +55,7 @@ public abstract class ASTNode {
      * node
      * @throws CGException If anything goes wrong during the visit computation 
      */
-    public abstract <S, T> T visit(Visitor<S, T> visitor, S state);
+    public abstract <S, T> T visit(SMPLVisitor<S, T> visitor, S state);
     
     protected String listChildren() {
         String result = "";

@@ -2,16 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package smpl;
+package lang;
 
 import ast.SMPLProgram;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import lang.SMPLLexer;
 
 
-public class SMPL {
+public class Repl {
 
     /**
      * @param args the command line arguments
@@ -19,7 +20,7 @@ public class SMPL {
      */
     public static void main(String[] args) throws Exception {
         SMPLEnvironment environment = new SMPLEnvironment();
-        SMPLVisitor visitor = new SMPLVisitor();
+        SMPLEvaluator visitor = new SMPLEvaluator();
         
         System.out.println("SMPL v0.1a");
         args = new String[1];
@@ -38,14 +39,12 @@ public class SMPL {
         parseEvalShow(System.in, visitor, environment);
     }
     
-    private static <S, T> void parseEvalShow(InputStream stream, Visitor<S, T> visitor, S state) throws Exception{
-        SMPLLexer lexer;
+    private static <S, T> void parseEvalShow(InputStream stream, SMPLVisitor<S, T> visitor, S state) throws Exception{
         SMPLParser parser;
         SMPLProgram commands = null;
 
         try {
-            lexer = new SMPLLexer(stream);
-            parser = new SMPLParser(lexer);
+            parser = new SMPLParser(new SMPLLexer(stream));
             commands = (SMPLProgram)parser.parse().value;
         } catch (Exception e) {
             throw e;
@@ -55,11 +54,6 @@ public class SMPL {
         if (commands != null) {
             try {
                 result = commands.visit(visitor, state);
-                if (result != null) {
-                    // Display value returned.
-                } else {
-                    //System.out.println("\nNo result");
-                }
             } catch (NullPointerException e) {
                 System.out.println("Runtime Error: " + e.getMessage());
             }

@@ -4,7 +4,7 @@
 // Fri Dec 28 19:31:07 GMT-05:00 2012
 //----------------------------------------------------
 
-package smpl;
+package lang;
 
 import ast.ASTCdrExp;
 import ast.ASTIdExp;
@@ -57,6 +57,7 @@ import ast.ASTListExp;
 import java_cup.runtime.*;
 import java.io.*;
 import java.util.*;
+import lang.SMPLLexer;
 
 /** CUP v0.10j generated parser.
   * @version Fri Dec 28 19:31:07 GMT-05:00 2012

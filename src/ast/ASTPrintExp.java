@@ -4,7 +4,7 @@
  */
 package ast;
 
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 public class ASTPrintExp extends ASTNode {
     
@@ -23,7 +23,7 @@ public class ASTPrintExp extends ASTNode {
         return _bPrintLn;
     }
             
-    public <S, T> T visit(Visitor<S, T> visitor, S state){
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state){
         return visitor.visitPrint(this, state);
     }
 }

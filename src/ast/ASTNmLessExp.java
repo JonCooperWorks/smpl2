@@ -4,7 +4,7 @@
  */
 package ast;
 
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 public class ASTNmLessExp extends ASTNmExp{
     public ASTNmLessExp(ASTNode i1, ASTNode i2){
@@ -12,7 +12,7 @@ public class ASTNmLessExp extends ASTNmExp{
     }
     
     @Override
-    public <S, T> T visit(Visitor<S, T> visitor, S state) {
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state) {
         return visitor.visitNmLThan(this, state);
     }
 }

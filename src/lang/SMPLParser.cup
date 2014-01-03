@@ -1,17 +1,16 @@
 
-package smpl;
+package lang;
 
 import java_cup.runtime.*;
 import java.io.*;
 import java.util.*;
-import astreps.*;
+import ast.*;
 
 /* Preliminaries to set up and use the scanner.  */
 parser code {:
 		SMPLLexer lexer;
 
 		public SMPLParser(SMPLLexer l) {
-		    // As of CUP v0.11, need to pass Lexer to superclass
 		    super(l);
 		    lexer = l;
 		}

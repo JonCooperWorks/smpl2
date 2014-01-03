@@ -5,7 +5,7 @@
 package ast;
 
 import java.util.ArrayList;
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 public class ASTMulAssignExp extends ASTNode{
     
@@ -18,7 +18,7 @@ public class ASTMulAssignExp extends ASTNode{
         exp = e;
     }
     
-    public <S, T> T visit(Visitor<S, T> visitor, S state) {
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state) {
         return visitor.visitMulAssignExp(this, state);
     }
     

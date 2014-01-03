@@ -4,7 +4,7 @@
  */
 package ast;
 
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 
 public class ASTBoAndExp extends ASTBoExp{
@@ -14,7 +14,7 @@ public class ASTBoAndExp extends ASTBoExp{
     }
     
     @Override
-    public <S, T> T visit(Visitor<S, T> visitor, S state) {
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state) {
         return visitor.visitBoolAnd(this, state);
     }
     

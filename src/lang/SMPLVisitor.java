@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package smpl;
+package lang;
 
 import ast.ASTCdrExp;
 import ast.ASTSizeExp;
@@ -56,7 +56,7 @@ import ast.ASTVectorListExp;
 import ast.ASTDefine;
 
 
-public interface Visitor<S, T> {
+public interface SMPLVisitor<S, T> {
     /**
      * This function will be called once when the visitor is first instantiated.
      * Place any initialization code here that is needed for a one-time setup of

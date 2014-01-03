@@ -4,7 +4,7 @@
 // Fri Dec 28 19:31:07 GMT-05:00 2012
 //----------------------------------------------------
 
-package smpl;
+package lang;
 
 /** CUP generated class containing symbol constants. */
 public class sym {

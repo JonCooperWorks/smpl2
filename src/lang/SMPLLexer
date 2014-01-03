@@ -1,7 +1,7 @@
 /* Specification for SMPL tokens */
 
 // user customisations
-package smpl;
+package lang;
 import java_cup.runtime.*;
 
 // Jlex directives
@@ -11,7 +11,6 @@ import java_cup.runtime.*;
 %cup
 %public
 
-%states YYSTRING, YYCHAR, YYBINARY, YYHEX
 
 %class SMPLLexer
 
@@ -60,14 +59,12 @@ identifier = {alphanum}+{allchars}+
 
 %%
 
-<YYINITIAL>	[" "|\t]*               { }
-
 <YYINITIAL>	\n[\t|" "|\n]*          { yychar = 0; }
 <YYINITIAL>	[\t|" "|\n]*\n          { yychar = 0; }
 
-<YYINITIAL>     "//".*                  { }
+<YYINITIAL>     "//".*                  { /* Comments */ }
 
-<YYINITIAL>     "/*"[^"*/"]*"*/"        { }
+<YYINITIAL>     "/*"[^"*/"]*"*/"        { /* Comments */ }
 
 <YYINITIAL>	{ws}+"+"{ws}+
 					{ return new Symbol(sym.PLUS); }
@@ -93,7 +90,7 @@ identifier = {alphanum}+{allchars}+
 					{ return new Symbol(sym.NEQUAL); }
 <YYINITIAL>	{ws}+">="{ws}+		
 					{ return new Symbol(sym.GEQUAL); }
-<YYINITIAL>	{ws}+"<={"ws}+		
+<YYINITIAL>	{ws}+"<="{ws}+		
 					{ return new Symbol(sym.LEQUAL); }
 <YYINITIAL>	{ws}+">"{ws}+		
 					{ return new Symbol(sym.GTHAN); }
@@ -111,6 +108,8 @@ identifier = {alphanum}+{allchars}+
 
 <YYINITIAL>	{ws}+"@"{ws}+
 					{ return new Symbol(sym.CONCAT); }
+
+<YYINITIAL>     {ws}                    { /* Ignore whitespace */ }
 
 
 <YYINITIAL>	"#t"                      { return new Symbol(sym.TRUE); }

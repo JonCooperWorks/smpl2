@@ -4,7 +4,7 @@
  */
 package ast;
 
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 
 public class ASTVectorIndexExp extends ASTNode{
@@ -22,7 +22,7 @@ public class ASTVectorIndexExp extends ASTNode{
     }
 
     @Override
-    public <S, T> T visit(Visitor<S, T> visitor, S state) {
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state) {
         return visitor.visitVectorIndexExp(this, state);
     }
 }

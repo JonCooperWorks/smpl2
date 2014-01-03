@@ -6,7 +6,7 @@ package ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 
 public class ASTVectorExp extends ASTNode{
@@ -28,7 +28,7 @@ public class ASTVectorExp extends ASTNode{
     }
 
     @Override
-    public <S, T> T visit(Visitor<S, T> visitor, S state) {
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state) {
         return visitor.visitMakeVector(this, state);
     } 
 }

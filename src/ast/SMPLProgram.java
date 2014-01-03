@@ -4,7 +4,7 @@
  */
 package ast;
 
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 public class SMPLProgram {
     ASTSequence body;
@@ -17,7 +17,7 @@ public class SMPLProgram {
         return body;
     }
     
-    public <S, T> T visit(Visitor<S, T> visitor, S state){
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state){
         return visitor.visitProgram(this, state);
     }
     

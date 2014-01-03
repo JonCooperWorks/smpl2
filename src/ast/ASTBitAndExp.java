@@ -4,7 +4,7 @@
  */
 package ast;
 
-import smpl.Visitor;
+import lang.SMPLVisitor;
 
 
 public class ASTBitAndExp extends ASTNmExp{
@@ -13,7 +13,7 @@ public class ASTBitAndExp extends ASTNmExp{
     }
     
     @Override
-    public <S, T> T visit(Visitor<S, T> visitor, S state) {
+    public <S, T> T visit(SMPLVisitor<S, T> visitor, S state) {
         return visitor.visitBitAnd(this, state);
     }
 }
