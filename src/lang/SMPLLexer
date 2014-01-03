@@ -3,6 +3,8 @@
 // user customisations
 package lang;
 import java_cup.runtime.*;
+import java.io.IOException;
+
 
 // Jlex directives
     
@@ -11,6 +13,7 @@ import java_cup.runtime.*;
 %cup
 %public
 
+%states YYSTRING
 
 %class SMPLLexer
 
@@ -111,7 +114,6 @@ identifier = {alphanum}+{allchars}+
 
 <YYINITIAL>     {ws}                    { /* Ignore whitespace */ }
 
-
 <YYINITIAL>	"#t"                      { return new Symbol(sym.TRUE); }
 <YYINITIAL>	"#f"                      { return new Symbol(sym.FALSE); }
 			
@@ -157,23 +159,19 @@ identifier = {alphanum}+{allchars}+
 
 <YYINITIAL>	"be"                      { return new Symbol(sym.BE); }
 
-<YYINITIAL> \"[^\"\\]*(\\.[^\"\\]*)*\" {
-                    return new Symbol(sym.STRING, yytext()
-                        .substring(1, yytext().length() - 1));
+
+<YYINITIAL> \"(.+|"\t"|"\n"|"\f"|\\\\)\" {
+                    return new Symbol(sym.STRING, yytext().substring(1, yylength() - 1));
                 }
 
 
-<YYINITIAL>	"'"(.|"\t"|"\n"|\\\\|"\f"|"\'")"'"	{
-                    return new Symbol(sym.CHAR, yytext()
-                        .substring(1, yytext().length() - 1));
+<YYINITIAL>        \'(.|"\t"|"\n"|\\\\|"\f"|"\'")\'        {
+                    return new Symbol(sym.CHAR, yytext().substring(1, yylength() - 1));
                  }
 
-<YYINITIAL>     "-"?[0-9]*"."[0-9]+     { return new Symbol( sym.DOUBLE, new Double( yytext() ) ); }
-<YYINITIAL>     "-"?[0-9]+"."[0-9]*     { return new Symbol( sym.DOUBLE, new Double( yytext() ) ); }
-<YYINITIAL>	"#x"{hxdigit}+            { return new Symbol( sym.HEX, Integer.parseInt( yytext().substring(2), 16 ) ); }
-<YYINITIAL>	"#b"(0|1)+                { return new Symbol( sym.BIN, Integer.parseInt( yytext().substring(2), 2 ) ); }
-<YYINITIAL>     "-"?[0-9]+              { return new Symbol( sym.INT, new Integer( yytext() ) ); }
 
-<YYINITIAL> "#\\"{hxdigit}{hxdigit}{hxdigit}{hxdigit} { return new Symbol(sym.CHAR, new Integer( yytext().substring(2) ).toString() ); }
+<YYINITIAL>     "-"?[0-9]*"."[0-9]+|"-"?[0-9]+"."[0-9]*     { return new Symbol( sym.DOUBLE, new Double(yytext().substring(0, yylength()-1))); }
+
 
 <YYINITIAL>  {identifier} { return new Symbol( sym.VARIABLE, yytext() ); }
+
