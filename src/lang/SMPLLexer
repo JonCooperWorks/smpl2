@@ -111,7 +111,8 @@ identifier = {alphanum}+{allchars}+
 <YYINITIAL>	{ws}+"@"{ws}+
 					{ return new Symbol(sym.CONCAT); }
 
-<YYINITIAL>     {ws}                    { /* Ignore whitespace */ }
+
+
 
 <YYINITIAL>	"#t"                      { return new Symbol(sym.TRUE); }
 <YYINITIAL>	"#f"                      { return new Symbol(sym.FALSE); }
@@ -159,6 +160,15 @@ identifier = {alphanum}+{allchars}+
 <YYINITIAL>	"be"                      { return new Symbol(sym.BE); }
 
 
+<YYINITIAL>     \-?[0-9]+         { return new Symbol( sym.INT, new Integer( yytext())); }
+
+
+<YYINITIAL>        "#x"{hxdigit}+            { return new Symbol( sym.HEX, Integer.parseInt(yytext().substring(2), 16)); }
+<YYINITIAL>        "#b"(0|1)+                { return new Symbol( sym.BIN, Integer.parseInt( yytext().substring(2),2)); }
+
+
+<YYINITIAL> "#"\\{hxdigit}{hxdigit}{hxdigit}{hxdigit} { return new Symbol(sym.CHAR, new Integer( yytext().substring(2, yylength()-1)).toString()); }
+
 <YYINITIAL> \"(.+|"\t"|"\n"|"\f"|\\\\)\" {
                     return new Symbol(sym.STRING, yytext()
                         .substring(1, yylength() - 1));
@@ -169,15 +179,6 @@ identifier = {alphanum}+{allchars}+
                     return new Symbol(sym.CHAR, yytext()
                         .substring(1, yylength() - 1));
                  }
-
-<YYINITIAL>     \-?[0-9]+         { return new Symbol( sym.INT, new Integer( yytext())); }
-
-
-<YYINITIAL>        "#x"{hxdigit}+            { return new Symbol( sym.HEX, Integer.parseInt(yytext().substring(2), 16)); }
-<YYINITIAL>        "#b"(0|1)+                { return new Symbol( sym.BIN, Integer.parseInt( yytext().substring(2),2)); }
-
-
-<YYINITIAL> "#"\\{hxdigit}{hxdigit}{hxdigit}{hxdigit} { return new Symbol(sym.CHAR, new Integer( yytext().substring(2, yylength()-1)).toString()); }
 
 
 
