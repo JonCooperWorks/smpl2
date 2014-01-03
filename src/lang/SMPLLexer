@@ -170,13 +170,16 @@ identifier = {alphanum}+{allchars}+
                         .substring(1, yylength() - 1));
                  }
 
+<YYINITIAL>     \-?[0-9]+         s     { return new Symbol( sym.INT, new Integer( yytext())); }
 
-<YYINITIAL>     "-"?[0-9]*"."[0-9]+|"-"?[0-9]+"."[0-9]*     { return new Symbol( sym.DOUBLE, new Double( yytext())); }
+<YYINITIAL>     "-"?[0-9]*("."[0-9]+)|"-"?[0-9]+("."[0-9]*)    { return new Symbol( sym.DOUBLE, new Double( yytext())); }
 <YYINITIAL>        "#x"{hxdigit}+            { return new Symbol( sym.HEX, Integer.parseInt(yytext().substring(2), 16)); }
 <YYINITIAL>        "#b"(0|1)+                { return new Symbol( sym.BIN, Integer.parseInt( yytext().substring(2),2)); }
-<YYINITIAL>     "-"?[0-9]+              { return new Symbol( sym.INT, new Integer( yytext())); }
 
-<YYINITIAL> "#\\"{hxdigit}{hxdigit}{hxdigit}{hxdigit} { return new Symbol(sym.CHAR, new Integer( yytext().substring(2, yylength()-1)).toString()); }
+
+<YYINITIAL> "#"\\{hxdigit}{hxdigit}{hxdigit}{hxdigit} { return new Symbol(sym.CHAR, new Integer( yytext().substring(2, yylength()-1)).toString()); }
+
+
 
 <YYINITIAL>  {identifier} { return new Symbol( sym.VARIABLE, yytext()); }
 
