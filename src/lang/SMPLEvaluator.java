@@ -79,6 +79,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitProgram(SMPLProgram prog, SMPLEnvironment state) {
+	System.out.println("visitProgram...");
         state = new SMPLEnvironment();
 
         ASTSequence seq = prog.getBody();
@@ -89,6 +90,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitSequence(ASTSequence seq, SMPLEnvironment state) {
+	System.out.println("visitSeq...");
         SMPLContainer result = null;
         for (ASTNode stmt : seq.statements()) {
             result = (SMPLContainer) stmt.visit(this, state);

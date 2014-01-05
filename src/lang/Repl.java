@@ -9,7 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import lang.SMPLLexer;
+import ast.SMPLLexer;
+import ast.SMPLParser;
 
 
 public class Repl {
@@ -35,14 +36,16 @@ public class Repl {
                 System.out.println("Could not find file " + arg.substring(7));
             }
         }
-        
+          System.out.println("SMPL test1");
         parseEvalShow(System.in, visitor, environment);
+          System.out.println("SMPL test2");
     }
     
     private static <S, T> void parseEvalShow(InputStream stream, SMPLVisitor<S, T> visitor, S state) throws Exception{
         SMPLParser parser;
         SMPLProgram commands = null;
-
+        
+        System.out.print(">");
         try {
             parser = new SMPLParser(new SMPLLexer(stream));
             commands = (SMPLProgram)parser.parse().value;
