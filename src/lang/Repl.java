@@ -12,7 +12,6 @@ import java.io.InputStream;
 import ast.SMPLLexer;
 import ast.SMPLParser;
 
-
 public class Repl {
 
     /**
@@ -22,33 +21,28 @@ public class Repl {
     public static void main(String[] args) throws Exception {
         SMPLEnvironment environment = new SMPLEnvironment();
         SMPLEvaluator visitor = new SMPLEvaluator();
-        
-        System.out.println("SMPL v0.1a");
-        args = new String[1];
-        args[0] = "";
-        for (String arg : args) {
+
+        System.out.println("SMPL");
+
+        if (args.length == 0) {
+            parseEvalShow(System.in, visitor, environment);
+        } else {
             try {
-                if (arg.startsWith("-file")) {
-                    parseEvalShow(new FileInputStream(new File(arg.substring(6))), visitor, environment);
-                } else {
-                }
-            } catch (FileNotFoundException fe) {
-                System.out.println("Could not find file " + arg.substring(7));
+                parseEvalShow(new FileInputStream(new File(args[0])), visitor, environment);
+            } catch (FileNotFoundException fnfe) {
+                System.out.println("Error: File \"" + args[0] + "\" does not exist!");
             }
         }
-          System.out.println("SMPL test1");
-        parseEvalShow(System.in, visitor, environment);
-          System.out.println("SMPL test2");
     }
-    
-    private static <S, T> void parseEvalShow(InputStream stream, SMPLVisitor<S, T> visitor, S state) throws Exception{
+
+    private static <S, T> void parseEvalShow(InputStream stream, SMPLVisitor<S, T> visitor, S state) throws Exception {
         SMPLParser parser;
         SMPLProgram commands = null;
-        
+
         System.out.print(">");
         try {
             parser = new SMPLParser(new SMPLLexer(stream));
-            commands = (SMPLProgram)parser.parse().value;
+            commands = (SMPLProgram) parser.parse().value;
         } catch (Exception e) {
             throw e;
         }
