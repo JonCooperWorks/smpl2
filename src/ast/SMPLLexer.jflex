@@ -126,6 +126,17 @@ identifier = {alphanum}+{alpha}+
 <YYINITIAL>	"#f"                      { return new Symbol(sym.FALSE); }
 
 
+<YYINITIAL> \"(.+|"\t"|"\n"|"\f"|\\\\)\" {
+                    return new Symbol(sym.STRING, yytext()
+                        .substring(1, yylength() - 1));
+                }
+
+
+<YYINITIAL>        \'(.|"\t"|"\n"|\\\\|"\f"|"\'")\'        {
+                    return new Symbol(sym.CHAR, yytext()
+                        .substring(1, yylength() - 1));
+                 }
+
 <YYINITIAL>    {num}+ {
 	       // INTEGER
 	       return new Symbol(sym.INT, 
@@ -142,4 +153,3 @@ identifier = {alphanum}+{alpha}+
          return new Symbol(sym.DOUBLE,
                            new Double(yytext()));
          }
-
