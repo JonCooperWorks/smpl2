@@ -117,8 +117,8 @@ identifier = {alphanum}+{alpha}+
 <YYINITIAL>	"cdr"                     {return new Symbol(sym.CDR);}
 <YYINITIAL>	"list"                    {return new Symbol(sym.LIST);}
 <YYINITIAL>	"size"                    {return new Symbol(sym.SIZE);}
-<YYINITIAL>	"eqv?"                    {return new Symbol(sym.EQVQ);}
-<YYINITIAL>	"equal?"                  {return new Symbol(sym.EQUALQ);}
+<YYINITIAL>	"eqvq"                    {return new Symbol(sym.EQVQ);}
+<YYINITIAL>	"equalq"                  {return new Symbol(sym.EQUALQ);}
 <YYINITIAL>	"substr"                  {return new Symbol(sym.SUBSTR);}
 <YYINITIAL>	"be"                      {return new Symbol(sym.BE);}
 
