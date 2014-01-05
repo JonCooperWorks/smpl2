@@ -50,7 +50,7 @@ cc = ([\b\f]|{nl})
 
 ws = {cc}|[\t ]
  
-alpha = [a-zA-Z_"$""#""?""@""~"]
+alpha = [a-zA-Z_"$""#""?""@""~""!"]
  
 num = [0-9]
  
@@ -58,7 +58,7 @@ alphanum = {alpha}|{num}
 
 hxdigit = [0-9a-fA-F]
 
-identifier = {alphanum}{alphanum}*{alpha}*
+identifier = {alphanum}*{alpha}+
  
 %%
 
