@@ -50,15 +50,20 @@ cc = ([\b\f]|{nl})
 
 ws = {cc}|[\t ]
  
-alpha = [a-zA-Z_"$""#""?""@""~""!"]
- 
-num = [0-9]
- 
-alphanum = {alpha}|{num}
-
 hxdigit = [0-9a-fA-F]
 
-identifier = {alphanum}*{alpha}+
+alpha = [a-zA-Z]
+
+num = [0-9]
+
+alphanum = {alpha}|{num}
+
+specialchars = ["#""+""-""*"".""!"]
+
+allchars={alphanum}|{specialchars}
+
+identifier = {alphanum}+{allchars}*
+
  
 %%
 
