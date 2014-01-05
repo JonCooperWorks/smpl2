@@ -657,10 +657,10 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
             return new SMPLVector();
         }
 
-        return ctllHelper(lst, lst.get(0), state);
+        return createLinkedList(lst, lst.get(0), state);
     }
 
-    private SMPLVector ctllHelper(ArrayList<SMPLContainer> l, SMPLContainer e, SMPLEnvironment state) {
+    private SMPLVector createLinkedList(ArrayList<SMPLContainer> l, SMPLContainer e, SMPLEnvironment state) {
 	System.out.println("ctllHelper...");
         if (l.size() > 1) {
             SMPLVector newVector = new SMPLVector();
@@ -673,7 +673,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
                 subList.add(l.get(i));
             }
 
-            newVector.getValues().add(new SMPLContainer(ctllHelper(subList, l.get(1), state)));
+            newVector.getValues().add(new SMPLContainer(createLinkedList(subList, l.get(1), state)));
             return newVector;
         } else if (l.size() == 1) {
             return new SMPLVector(l.get(0));
