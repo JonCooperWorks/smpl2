@@ -58,7 +58,7 @@ alphanum = {alpha}|{num}
 
 hxdigit = [0-9a-fA-F]
 
-identifier = {alphanum}+{alpha}+
+identifier = {alphanum}{alphanum}*{alpha}*
  
 %%
 
