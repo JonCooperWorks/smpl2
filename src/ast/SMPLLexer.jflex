@@ -143,7 +143,12 @@ identifier = {alphanum}+{alpha}+
                            new Integer(yytext()));
 	       }
 
-<YYINITIAL>    {alpha}{alphanum}* {
+<YYINITIAL>        #b(0|1)+              { return new Symbol( sym.BIN, Integer.parseInt( yytext().substring(2),2)); }
+
+
+<YYINITIAL>        #x{hxdigit}+            { return new Symbol( sym.HEX, Integer.parseInt(yytext().substring(2), 16)); }
+
+<YYINITIAL>    {identifier} {
 	       // VARIABLE
 	       return new Symbol(sym.VARIABLE, yytext());
 	       }

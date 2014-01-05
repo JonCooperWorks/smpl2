@@ -63,7 +63,7 @@ terminal Double DOUBLE;
 terminal String VARIABLE;
 terminal String CHAR;
 terminal String STRING;
-
+terminal Integer BIN, HEX;
 //Extras
 terminal WS;
 
@@ -153,8 +153,8 @@ factor ::= VARIABLE:v {: RESULT = new ASTIdExp( v ); :} |
            DOUBLE:d {: RESULT = new ASTFloatExp( d.floatValue() ); :} |
            STRING:s {: RESULT = new ASTStringExp( s ); :} |
            CHAR:c {: RESULT = new ASTStringExp( c ); :} |
-           //HEX:h {: RESULT = new ASTIntExp( h ); :} |
-           //BIN:b {: RESULT = new ASTIntExp( b ); :} |
+           HEX:h {: RESULT = new ASTIntExp( h ); :} |
+           BIN:b {: RESULT = new ASTIntExp( b ); :} |
            INT:i {: RESULT = new ASTIntExp( i ); :} |
            TRUE {: RESULT = new ASTBooleanExp( true ); :} |
            FALSE {: RESULT = new ASTBooleanExp( false ); :} |
