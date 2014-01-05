@@ -18,13 +18,12 @@ public class SMPLEnvironment {
         parent = null;
     }
     
-    public SMPLEnvironment(SMPLEnvironment mother){
+    public SMPLEnvironment(SMPLEnvironment parent){
         env = new HashMap<String, SMPLContainer>();
-        parent = mother;
+        this.parent = parent;
     }
     
     public void put(String id, SMPLContainer item){
-        env.remove(id);
         env.put(id, item);
     }
     
@@ -38,5 +37,10 @@ public class SMPLEnvironment {
             return parent.get(id);
         }
         return target;
+    }
+    
+    @Override
+    public String toString() {
+        return env.toString();
     }
 }

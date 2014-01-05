@@ -22,10 +22,13 @@ public class Repl {
         SMPLEnvironment environment = new SMPLEnvironment();
         SMPLEvaluator visitor = new SMPLEvaluator();
 
-        System.out.println("SMPL");
+        System.out.println("SMPL Interpreter.");
+        System.out.println("Press Ctrl-C to exit");
 
         if (args.length == 0) {
-            parseEvalShow(System.in, visitor, environment);
+            while (true) {
+                parseEvalShow(System.in, visitor, environment);
+            }
         } else {
             try {
                 parseEvalShow(new FileInputStream(new File(args[0])), visitor, environment);
@@ -37,20 +40,20 @@ public class Repl {
 
     private static <S, T> void parseEvalShow(InputStream stream, SMPLVisitor<S, T> visitor, S state) throws Exception {
         SMPLParser parser;
-        SMPLProgram commands = null;
+        SMPLProgram program = null;
 
         System.out.print(">");
         try {
             parser = new SMPLParser(new SMPLLexer(stream));
-            commands = (SMPLProgram) parser.parse().value;
+            program = (SMPLProgram) parser.parse().value;
         } catch (Exception e) {
             throw e;
         }
 
         T result;
-        if (commands != null) {
+        if (program != null) {
             try {
-                result = commands.visit(visitor, state);
+                result = program.visit(visitor, state);
             } catch (NullPointerException e) {
                 System.out.println("Runtime Error: " + e.getMessage());
             }
