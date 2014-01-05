@@ -282,3 +282,4 @@ bindingList ::= bindingList:el COMMA binding:e {: RESULT = el; ((ArrayList<ASTNo
                                 RESULT = lst;
                             :};
 
+empty ::= ;
