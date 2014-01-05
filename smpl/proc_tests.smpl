@@ -1,3 +1,0 @@
-proc(x) x + 1 ; zz
-proc(x) proc(n) x + n ; zz
-print(proc(x) x(x)) ; print("\n"); zz
