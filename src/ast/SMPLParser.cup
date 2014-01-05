@@ -223,8 +223,8 @@ vectorExpList ::= vectorExpList:vel COMMA vecExpression:e {: RESULT = vel; ((Arr
                                    :};
 
 
-ifStatement ::= IF expression:cond THEN expression:exp {: RESULT = new ASTIfExp( cond, exp, null ); :} |
-                IF expression:cond THEN expression:exp ELSE expression:elseExp {: RESULT = new ASTIfExp( cond, exp, elseExp ); :};
+ifStatement ::= IF expression:cond THEN stmtList:exp {: RESULT = new ASTIfExp( cond, exp, null ); :} |
+                IF expression:cond THEN stmtList:exp ELSE stmtList:elseExp {: RESULT = new ASTIfExp( cond, exp, elseExp ); :};
 
 
 printStatement ::= PRINT LPAREN expression:e RPAREN {: RESULT = new ASTPrintExp( e, false ); :};

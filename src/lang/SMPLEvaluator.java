@@ -726,7 +726,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         return new SMPLContainer(new SMPLBoolean(e1.getValue() == e2.getValue()));
     }
 
-    boolean objectsAreEqual(SMPLContainer e1, SMPLContainer e2) {
+    private boolean objectsAreEqual(SMPLContainer e1, SMPLContainer e2) {
 
         if (!e1.getType().equals(e2.getType())) {
             return false;
