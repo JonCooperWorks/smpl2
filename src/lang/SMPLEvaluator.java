@@ -62,24 +62,13 @@ import natives.*;
 public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer> {
 
     @Override
-    public void setup() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public SMPLEnvironment createInitialState() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void output(SMPLContainer value) {
-        //throw new UnsupportedOperationException("Not supported yet.");
         System.out.println(value.getValue().toString());
     }
 
     @Override
     public SMPLContainer visitProgram(SMPLProgram prog, SMPLEnvironment state) {
-	System.out.println("visitProgram...");
+	System.out.print("visitProgram...");
         state = new SMPLEnvironment();
 
         ASTSequence seq = prog.getBody();
@@ -90,7 +79,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitSequence(ASTSequence seq, SMPLEnvironment state) {
-	System.out.println("visitSeq...");
+	System.out.print("visitSeq...");
         SMPLContainer result = null;
         for (ASTNode stmt : seq.statements()) {
             result = (SMPLContainer) stmt.visit(this, state);
@@ -101,7 +90,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitDefine(ASTDefine def, SMPLEnvironment state) {
-	System.out.println("visitDefine...");
+	System.out.print("visitDefine...");
         SMPLContainer contents = def.getContents().visit(this, state);
         String key = def.getID();
         state.put(key, contents);
@@ -110,37 +99,37 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitID(ASTIdExp id, SMPLEnvironment state) {
-	System.out.println("visitID...");
+	System.out.print("visitID...");
         return state.get(id.getName());
     }
 
     @Override
     public SMPLContainer visitMakeBoolean(ASTBooleanExp bool, SMPLEnvironment state) {
-	System.out.println("visitMakeBoolean...");
+	System.out.print("visitMakeBoolean...");
         return new SMPLContainer(new SMPLBoolean(bool.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeFloat(ASTFloatExp flVal, SMPLEnvironment state) {
-	System.out.println("visitMakeFloat...");
+	System.out.print("visitMakeFloat...");
         return new SMPLContainer(new SMPLFloat(flVal.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeInt(ASTIntExp intVal, SMPLEnvironment state) {
-	System.out.println("visitMakeInt...");
+	System.out.print("visitMakeInt...");
         return new SMPLContainer(new SMPLInt(intVal.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeString(ASTStringExp str, SMPLEnvironment state) {
-	System.out.println("visitMakeString...");
+	System.out.print("visitMakeString...");
         return new SMPLContainer(new SMPLString(str.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeVector(ASTVectorExp vec, SMPLEnvironment state) {
-	System.out.println("visitMakeVector...");
+	System.out.print("visitMakeVector...");
         ArrayList<ASTNode> contents = vec.getValue();
         ArrayList<SMPLContainer> container = new ArrayList<SMPLContainer>();
         for (int i = 0; i < contents.size(); i++) {
@@ -152,14 +141,14 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBoolNot(ASTBoNotExp bnot, SMPLEnvironment state) {
-	System.out.println("visitBoolNot...");
+	System.out.print("visitBoolNot...");
         boolean bexp = ((SMPLBoolean) bnot.getOper().visit(this, state).getValue()).isValue();
         return new SMPLContainer(new SMPLBoolean(!bexp));
     }
 
     @Override
     public SMPLContainer visitBoolAnd(ASTBoAndExp band, SMPLEnvironment state) {
-	System.out.println("visitBoolAnd...");
+	System.out.print("visitBoolAnd...");
         boolean bexp1 = ((SMPLBoolean) band.getOper().visit(this, state).getValue()).isValue();
         boolean bexp2 = ((SMPLBoolean) band.getOper2().visit(this, state).getValue()).isValue();
         return new SMPLContainer(new SMPLBoolean(bexp1 && bexp2));
@@ -167,7 +156,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBoolOr(ASTBoOrExp bor, SMPLEnvironment state) {
-	System.out.println("visitBoolOr...");
+	System.out.print("visitBoolOr...");
         boolean bexp1 = ((SMPLBoolean) bor.getOper().visit(this, state).getValue()).isValue();
         boolean bexp2 = ((SMPLBoolean) bor.getOper2().visit(this, state).getValue()).isValue();
         return new SMPLContainer(new SMPLBoolean(bexp1 || bexp2));
@@ -175,11 +164,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmAdd(ASTNmAddExp nmadd, SMPLEnvironment state) {
-	System.out.println("visitNmAdd...");
+	System.out.print("visitNmAdd...");
         SMPLContainer container;
-        int check1 = nmadd.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmadd.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmadd.getOper().visit(this, state).getType();
+        String type2 = nmadd.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmadd.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmadd.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLFloat(oper1 + oper2));
@@ -193,11 +182,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmSub(ASTNmSubExp nmsub, SMPLEnvironment state) {
-        System.out.println("visitNmSub...");
+        System.out.print("visitNmSub...");
 	SMPLContainer container;
-        int check1 = nmsub.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmsub.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmsub.getOper().visit(this, state).getType();
+        String type2 = nmsub.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmsub.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmsub.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLFloat(oper1 - oper2));
@@ -211,11 +200,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmMul(ASTNmMulExp nmmul, SMPLEnvironment state) {
-        System.out.println("visitNmMul...");
+        System.out.print("visitNmMul...");
 	SMPLContainer container;
-        int check1 = nmmul.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmmul.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmmul.getOper().visit(this, state).getType();
+        String type2 = nmmul.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmmul.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmmul.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLFloat(oper1 * oper2));
@@ -229,11 +218,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmDiv(ASTNmDivExp nmdiv, SMPLEnvironment state) {
-	System.out.println("visitNmDiv...");
+	System.out.print("visitNmDiv...");
         SMPLContainer container;
-        int check1 = nmdiv.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmdiv.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmdiv.getOper().visit(this, state).getType();
+        String type2 = nmdiv.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmdiv.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmdiv.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLFloat(oper1 / oper2));
@@ -247,11 +236,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmMod(ASTNmModExp nmmod, SMPLEnvironment state) {
-	System.out.println("visitNmMod...");
+	System.out.print("visitNmMod...");
         SMPLContainer container;
-        int check1 = nmmod.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmmod.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmmod.getOper().visit(this, state).getType();
+        String type2 = nmmod.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmmod.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmmod.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLFloat(oper1 % oper2));
@@ -265,11 +254,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmEquals(ASTNmEqlExp nmeqls, SMPLEnvironment state) {
-	System.out.println("visitNmEq...");
+	System.out.print("visitNmEq...");
         SMPLContainer container;
-        int check1 = nmeqls.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmeqls.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmeqls.getOper().visit(this, state).getType();
+        String type2 = nmeqls.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmeqls.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmeqls.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLBoolean(oper1 == oper2));
@@ -283,11 +272,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmLThan(ASTNmLessExp nmless, SMPLEnvironment state) {
-	System.out.println("visitNmLT...");
+	System.out.print("visitNmLT...");
         SMPLContainer container;
-        int check1 = nmless.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmless.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmless.getOper().visit(this, state).getType();
+        String type2 = nmless.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmless.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmless.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLBoolean(oper1 < oper2));
@@ -301,11 +290,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmGThan(ASTNmGrtrExp nmgrtr, SMPLEnvironment state) {
-	System.out.println("visitNmGT...");        
+	System.out.print("visitNmGT...");        
 	SMPLContainer container;
-        int check1 = nmgrtr.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmgrtr.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmgrtr.getOper().visit(this, state).getType();
+        String type2 = nmgrtr.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmgrtr.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmgrtr.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLBoolean(oper1 > oper2));
@@ -319,11 +308,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmLEqls(ASTNmLEqlExp nmleql, SMPLEnvironment state) {
-	System.out.println("visitNmLTEQ...");        
+	System.out.print("visitNmLTEQ...");        
 	SMPLContainer container;
-        int check1 = nmleql.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmleql.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmleql.getOper().visit(this, state).getType();
+        String type2 = nmleql.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmleql.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmleql.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLBoolean(oper1 <= oper2));
@@ -337,11 +326,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmGEqls(ASTNmGEqlExp nmgeql, SMPLEnvironment state) {
-	System.out.println("visitNmGTEQ...");        
+	System.out.print("visitNmGTEQ...");        
 	SMPLContainer container;
-        int check1 = nmgeql.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmgeql.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmgeql.getOper().visit(this, state).getType();
+        String type2 = nmgeql.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmgeql.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmgeql.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLBoolean(oper1 >= oper2));
@@ -355,11 +344,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmNotEql(ASTNmNotEqlExp nmneql, SMPLEnvironment state) {
-	System.out.println("visitNmNotEq...");
+	System.out.print("visitNmNotEq...");
         SMPLContainer container;
-        int check1 = nmneql.getOper().visit(this, state).getType().compareTo("Float");
-        int check2 = nmneql.getOper2().visit(this, state).getType().compareTo("Float");
-        if (check1 == 0 || check2 == 0) {
+        String type1 = nmneql.getOper().visit(this, state).getType();
+        String type2 = nmneql.getOper2().visit(this, state).getType();
+        if ("Float".equals(type1) || "Float".equals(type2)) {
             double oper1 = ((SMPLFloat) nmneql.getOper().visit(this, state).getValue()).getValue();
             double oper2 = ((SMPLFloat) nmneql.getOper2().visit(this, state).getValue()).getValue();
             container = new SMPLContainer(new SMPLBoolean(oper1 != oper2));
@@ -373,30 +362,30 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBitAnd(ASTBitAndExp btand, SMPLEnvironment state) {
-	System.out.println("visitBitAnd...");
+	System.out.print("visitBitAnd...");
         int oper1 = ((SMPLInt) btand.getOper().visit(this, state).getValue()).getValue();
         int oper2 = ((SMPLInt) btand.getOper2().visit(this, state).getValue()).getValue();
         return new SMPLContainer(new SMPLInt(oper1 & oper2));
     }
 
     @Override
-    public SMPLContainer visitBitOr(ASTBitOrExp btand, SMPLEnvironment state) {
-	System.out.println("visitBitOr...");
-        int oper1 = ((SMPLInt) btand.getOper().visit(this, state).getValue()).getValue();
-        int oper2 = ((SMPLInt) btand.getOper2().visit(this, state).getValue()).getValue();
+    public SMPLContainer visitBitOr(ASTBitOrExp btor, SMPLEnvironment state) {
+	System.out.print("visitBitOr...");
+        int oper1 = ((SMPLInt) btor.getOper().visit(this, state).getValue()).getValue();
+        int oper2 = ((SMPLInt) btor.getOper2().visit(this, state).getValue()).getValue();
         return new SMPLContainer(new SMPLInt(oper1 | oper2));
     }
 
     @Override
-    public SMPLContainer visitBitNot(ASTBitNotExp btand, SMPLEnvironment state) {
-	System.out.println("visitBitNot...");
-        int oper = ((SMPLInt) btand.getOper().visit(this, state).getValue()).getValue();
+    public SMPLContainer visitBitNot(ASTBitNotExp btnot, SMPLEnvironment state) {
+	System.out.print("visitBitNot...");
+        int oper = ((SMPLInt) btnot.getOper().visit(this, state).getValue()).getValue();
         return new SMPLContainer(new SMPLInt(~oper));
     }
 
     @Override
     public SMPLContainer visitFunDef(ASTFunDefExp fundef, SMPLEnvironment state) {
-	System.out.println("visitFunDef...");
+	System.out.print("visitFunDef...");
         String key = fundef.getName();
         ASTNode body = fundef.getBody();
         ArrayList<String> params = fundef.getParameters();
@@ -405,21 +394,21 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         return contents;
     }
 
-    public SMPLContainer visitLetDef(ASTFunDefExp fundef, SMPLEnvironment state) {
-	System.out.println("visitLetDef...");
+    public SMPLContainer visitLetDef(ASTFunDefExp letdef, SMPLEnvironment state) {
+	System.out.print("visitLetDef...");
         SMPLEnvironment newEnv = new SMPLEnvironment(state);
-        ArrayList<ASTNode> params = fundef.getParamNodes();
+        ArrayList<ASTNode> params = letdef.getParamNodes();
 
         for (ASTNode node : params) {
             node.visit(this, newEnv);
         }
 
-        return fundef.getBody().visit(this, newEnv);
+        return letdef.getBody().visit(this, newEnv);
     }
 
     @Override
     public SMPLContainer visitFunCall(ASTFunCallExp funcall, SMPLEnvironment state) {
-	System.out.println("visitFunCall...");
+	System.out.print("visitFunCall...");
         SMPLEnvironment child = new SMPLEnvironment(state);
         SMPLContainer funcToCallContainer = funcall.getFunction().visit(this, state);
 
@@ -512,7 +501,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitAssign(ASTAssignExp assignExp, SMPLEnvironment state) {
-	System.out.println("visitAssign...");
+	System.out.print("visitAssign...");
         String strVarName = assignExp.getVariableName();
         SMPLContainer varVal = assignExp.getValue().visit(this, state);
         state.put(strVarName, varVal);
@@ -521,7 +510,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitIfExp(ASTIfExp ifExp, SMPLEnvironment state) {
-	System.out.println("visitIfExp...");
+	System.out.print("visitIfExp...");
         SMPLContainer ifCond = ifExp.getCondition().visit(this, state);
         SMPLBoolean cond = null;
 
@@ -545,13 +534,15 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitPrint(ASTPrintExp printExp, SMPLEnvironment state) {
-	System.out.println("visitPrint...");
+	System.out.print("visitPrint...");
         SMPLContainer exp = printExp.getExpression().visit(this, state);
+        Object output = exp.getValue().toString();
+        
 
         if (printExp.PrintLine()) {
-            System.out.println(exp.getValue().toString());
+            System.out.println(output);
         } else {
-            System.out.print(exp.getValue().toString());
+            System.out.print(output);
         }
 
         return null;
@@ -559,7 +550,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitRead(ASTReadExp _, SMPLEnvironment state) {
-        System.out.println("visitRead...");
+        System.out.print("visitRead...");
 	Scanner scan = new Scanner(System.in);
         String str = scan.next();
 
@@ -568,7 +559,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitReadInt(ASTReadIntExp _, SMPLEnvironment state) {
-	System.out.println("visitReadInt...");
+	System.out.print("visitReadInt...");
         Scanner scan = new Scanner(System.in);
         try {
             int i = scan.nextInt();
@@ -579,17 +570,17 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     @Override
-    public SMPLContainer visitPairExp(ASTPairExp e, SMPLEnvironment state) {
-	System.out.println("visitPair...");
-        return new SMPLContainer(new SMPLVector(e.getExp1().visit(this, state),
-                e.getExp2().visit(this, state)));
+    public SMPLContainer visitPairExp(ASTPairExp pair, SMPLEnvironment state) {
+	System.out.print("visitPair...");
+        return new SMPLContainer(new SMPLVector(pair.getExp1().visit(this, state),
+                pair.getExp2().visit(this, state)));
     }
 
     @Override
-    public SMPLContainer visitCarExp(ASTCarExp e, SMPLEnvironment state) {
-	System.out.println("visitCar...");
+    public SMPLContainer visitCarExp(ASTCarExp car, SMPLEnvironment state) {
+	System.out.print("visitCar...");
         try {
-            SMPLVector v = (SMPLVector) e.getExp().visit(this, state).getValue();
+            SMPLVector v = (SMPLVector) car.getExp().visit(this, state).getValue();
 
             ArrayList<SMPLContainer> values = v.getValues();
 
@@ -605,10 +596,10 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     @Override
-    public SMPLContainer visitCdrExp(ASTCdrExp e, SMPLEnvironment state) {
-	System.out.println("visitCdr...");
+    public SMPLContainer visitCdrExp(ASTCdrExp cdr, SMPLEnvironment state) {
+	System.out.print("visitCdr...");
         try {
-            SMPLVector v = (SMPLVector) e.getExp().visit(this, state).getValue();
+            SMPLVector v = (SMPLVector) cdr.getExp().visit(this, state).getValue();
 
             ArrayList<SMPLContainer> values = v.getValues();
 
@@ -624,9 +615,9 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     @Override
-    public SMPLContainer visitPairQExp(ASTPairQExp e, SMPLEnvironment state) {
-	System.out.println("visitPairQ...");
-        return new SMPLContainer(new SMPLBoolean(e.getExp().visit(this, state).getType() == "Vector"));
+    public SMPLContainer visitPairQExp(ASTPairQExp pairq, SMPLEnvironment state) {
+	System.out.print("visitPairQ...");
+        return new SMPLContainer(new SMPLBoolean(pairq.getExp().visit(this, state).getType() == "Vector"));
     }
 
     private SMPLVector createLinkedList(ArrayList<ASTNode> lst, SMPLEnvironment state) {
@@ -692,16 +683,16 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     @Override
-    public SMPLContainer visitListExp(ASTListExp e, SMPLEnvironment state) {
-	System.out.println("visitList...");
+    public SMPLContainer visitListExp(ASTListExp list, SMPLEnvironment state) {
+	System.out.print("visitList...");
         // Create a linked list of Pairs...
-        return new SMPLContainer(createLinkedList(e.getValues(), state));
+        return new SMPLContainer(createLinkedList(list.getValues(), state));
     }
 
     @Override
-    public SMPLContainer visitSizeExp(ASTSizeExp e, SMPLEnvironment state) {
-	System.out.println("visitSize...");
-        SMPLContainer vector = e.getExp().visit(this, state);
+    public SMPLContainer visitSizeExp(ASTSizeExp size, SMPLEnvironment state) {
+	System.out.print("visitSize...");
+        SMPLContainer vector = size.getExp().visit(this, state);
 
         if (!"Vector".equals(vector.getType())) {
             System.out.println("The size function requires a Vector.");
@@ -727,10 +718,10 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     @Override
-    public SMPLContainer visitEqvExp(ASTEqvExp e, SMPLEnvironment state) {
-	System.out.println("visitEqv...");
-        SMPLContainer e1 = e.getExp1().visit(this, state);
-        SMPLContainer e2 = e.getExp2().visit(this, state);
+    public SMPLContainer visitEqvExp(ASTEqvExp eqv, SMPLEnvironment state) {
+	System.out.print("visitEqv...");
+        SMPLContainer e1 = eqv.getExp1().visit(this, state);
+        SMPLContainer e2 = eqv.getExp2().visit(this, state);
 
         return new SMPLContainer(new SMPLBoolean(e1.getValue() == e2.getValue()));
     }
@@ -785,18 +776,18 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     @Override
-    public SMPLContainer visitEqualExp(ASTEqualExp e, SMPLEnvironment state) {
-	System.out.println("visitObjectsAreEqual...");
-        SMPLContainer e1 = e.getExp1().visit(this, state);
-        SMPLContainer e2 = e.getExp2().visit(this, state);
+    public SMPLContainer visitEqualExp(ASTEqualExp equal, SMPLEnvironment state) {
+	System.out.print("visitObjectsAreEqual...");
+        SMPLContainer e1 = equal.getExp1().visit(this, state);
+        SMPLContainer e2 = equal.getExp2().visit(this, state);
 
         return new SMPLContainer(new SMPLBoolean(objectsAreEqual(e1, e2)));
     }
 
-    public SMPLContainer visitVectorIndexExp(ASTVectorIndexExp e, SMPLEnvironment state) {
-	System.out.println("visitVecIndex...");
-        SMPLContainer vectorContainer = e.getExp().visit(this, state);
-        SMPLContainer indexContainer = e.getIndex().visit(this, state);
+    public SMPLContainer visitVectorIndexExp(ASTVectorIndexExp idx, SMPLEnvironment state) {
+	System.out.print("visitVecIndex...");
+        SMPLContainer vectorContainer = idx.getExp().visit(this, state);
+        SMPLContainer indexContainer = idx.getIndex().visit(this, state);
 
         if (!"Vector".equals(vectorContainer.getType())) {
             System.out.println("Index expressions must be vectors.");
@@ -812,10 +803,10 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         return flatten(vector).get(index.getValue());
     }
 
-    public SMPLContainer visitListConcat(ASTListConcatExp e, SMPLEnvironment state) {
-	System.out.println("visitListConcat...");
-        SMPLContainer vectorContainer1 = e.getVector1().visit(this, state);
-        SMPLContainer vectorContainer2 = e.getVector2().visit(this, state);
+    public SMPLContainer visitListConcat(ASTListConcatExp concat, SMPLEnvironment state) {
+	System.out.print("visitListConcat...");
+        SMPLContainer vectorContainer1 = concat.getVector1().visit(this, state);
+        SMPLContainer vectorContainer2 = concat.getVector2().visit(this, state);
 
         if (!"Vector".equals(vectorContainer1.getType())) {
             System.out.println("@ requires vectors.");
@@ -842,11 +833,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         return new SMPLContainer(newVector);
     }
 
-    public SMPLContainer visitStringExp(ASTSubstrExp e, SMPLEnvironment state) {
-	System.out.println("visitString...");
-        SMPLContainer strContainer = e.getString().visit(this, state);
-        SMPLContainer startContainer = e.getStart().visit(this, state);
-        SMPLContainer endContainer = e.getEnd().visit(this, state);
+    public SMPLContainer visitStringExp(ASTSubstrExp st, SMPLEnvironment state) {
+	System.out.print("visitString...");
+        SMPLContainer strContainer = st.getString().visit(this, state);
+        SMPLContainer startContainer = st.getStart().visit(this, state);
+        SMPLContainer endContainer = st.getEnd().visit(this, state);
 
         if (!"String".equals(strContainer.getType())) {
             System.out.println("Substring requires a string as the first argument.");
@@ -875,9 +866,9 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         }
     }
 
-    public SMPLContainer visitVecExp(ASTVecExp e, SMPLEnvironment state) {
-	System.out.println("visitVec...");        
-	SMPLContainer sizeContainer = e.getSize().visit(this, state);
+    public SMPLContainer visitVecExp(ASTVecExp vec, SMPLEnvironment state) {
+	System.out.print("visitVec...");        
+	SMPLContainer sizeContainer = vec.getSize().visit(this, state);
 
         if (!"Integer".equals(sizeContainer.getType())) {
             System.out.println("The size of the vector expression must be an integer.");
@@ -890,18 +881,18 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
             ArrayList<ASTNode> args = new ArrayList<ASTNode>();
             args.add(new ASTIntExp(i));
 
-            ASTFunCallExp funcCallExp = new ASTFunCallExp(e.getFunction(), new ASTVectorExp(args));
+            ASTFunCallExp funcCallExp = new ASTFunCallExp(vec.getFunction(), new ASTVectorExp(args));
             v.getValues().add(funcCallExp.visit(this, state));
         }
 
         return new SMPLContainer(v);
     }
 
-    public SMPLContainer visitVectorListExp(ASTVectorListExp e, SMPLEnvironment state) {
-	System.out.println("visitVecList...");
+    public SMPLContainer visitVectorListExp(ASTVectorListExp vecList, SMPLEnvironment state) {
+	System.out.print("visitVecList...");
         // Create a Vector of each element...
         ArrayList<SMPLContainer> list = new ArrayList<SMPLContainer>();
-        ArrayList<ASTNode> nodeList = e.getValues();
+        ArrayList<ASTNode> nodeList = vecList.getValues();
 
         for (int i = 0; i < nodeList.size(); i++) {
 
@@ -917,9 +908,9 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         return new SMPLContainer(new SMPLVector(list));
     }
 
-    public SMPLContainer visitMulAssignExp(ASTMulAssignExp e, SMPLEnvironment state) {
-	System.out.println("visitMulAssign...");
-        SMPLContainer expListContainer = e.getExpression().visit(this, state);
+    public SMPLContainer visitMulAssignExp(ASTMulAssignExp mulAssign, SMPLEnvironment state) {
+	System.out.print("visitMulAssign...");
+        SMPLContainer expListContainer = mulAssign.getExpression().visit(this, state);
 
         if (!"Vector".equals(expListContainer.getType())) {
             System.out.println("Expression must evaluate to a vector.");
@@ -927,7 +918,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         }
 
         SMPLVector expList = (SMPLVector) expListContainer.getValue();
-        ArrayList<String> varList = e.getVariableList();
+        ArrayList<String> varList = mulAssign.getVariableList();
 
         ArrayList<SMPLContainer> vals = flatten(expList);
 
@@ -950,15 +941,15 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         return null;
     }
 
-    public SMPLContainer visitCaseExp(ASTCaseExp e, SMPLEnvironment state) {
-	System.out.println("visitCase...");
+    public SMPLContainer visitCaseExp(ASTCaseExp c, SMPLEnvironment state) {
+	System.out.print("visitCase...");
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public SMPLContainer visitCaseStmtExp(ASTCaseStmtExp e, SMPLEnvironment state) {
-	System.out.println("visitCaseStmt...");
+    public SMPLContainer visitCaseStmtExp(ASTCaseStmtExp cStmt, SMPLEnvironment state) {
+	System.out.print("visitCaseStmt...");
         // Go thru each case exp
-        ArrayList<ASTNode> caseExps = e.getCaseExpressions();
+        ArrayList<ASTNode> caseExps = cStmt.getCaseExpressions();
 
         for (ASTNode n : caseExps) {
             ASTCaseExp caseExp = (ASTCaseExp) n;
@@ -979,8 +970,8 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
         return null;
     }
 
-    public SMPLContainer visitLazyExp(ASTLazyExp e, SMPLEnvironment state) {
-	System.out.println("visitLazy..."); 	
-       return e.getExp().visit(this, state);
+    public SMPLContainer visitLazyExp(ASTLazyExp lazy, SMPLEnvironment state) {
+	System.out.print("visitLazy..."); 	
+       return lazy.getExp().visit(this, state);
     }
 }
