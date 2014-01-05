@@ -100,7 +100,12 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     @Override
     public SMPLContainer visitID(ASTIdExp id, SMPLEnvironment state) {
 	System.out.print("visitID...");
-        return state.get(id.getName());
+        SMPLContainer value = state.get(id.getName());
+        if (value == null) {
+            System.out.println("Undeclared Variable: \""+ id.getName() + "\".");
+        }
+        
+        return value;
     }
 
     @Override
