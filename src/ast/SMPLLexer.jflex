@@ -113,6 +113,7 @@ identifier = {alphanum}+{alpha}+
 <YYINITIAL>	"readint"                 {return new Symbol(sym.READINT);}
 <YYINITIAL>	"lazy"                    {return new Symbol(sym.LAZY);}
 <YYINITIAL>	"pair"                    {return new Symbol(sym.PAIR);}
+<YYINITIAL>	"pair?"                    {return new Symbol(sym.PAIRQ);}
 <YYINITIAL>	"car"                     {return new Symbol(sym.CAR);}
 <YYINITIAL>	"cdr"                     {return new Symbol(sym.CDR);}
 <YYINITIAL>	"list"                    {return new Symbol(sym.LIST);}
