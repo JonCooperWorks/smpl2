@@ -42,7 +42,7 @@ public class Repl {
         SMPLParser parser;
         SMPLProgram program = null;
 
-        System.out.print(">");
+        System.out.print("\n>");
         try {
             parser = new SMPLParser(new SMPLLexer(stream));
             program = (SMPLProgram) parser.parse().value;
