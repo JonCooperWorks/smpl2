@@ -27,7 +27,6 @@ public class ASTSequence extends ASTNode{
     
     public Iterable<ASTNode> statements() {
         return children;
-//        return children.iterator();
     }
     
     @Override

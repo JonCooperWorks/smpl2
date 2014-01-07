@@ -68,8 +68,6 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitProgram(SMPLProgram prog, SMPLEnvironment state) {
-        System.out.print("visitProgram...");
-        state = new SMPLEnvironment();
 
         ASTSequence seq = prog.getBody();
         SMPLContainer result = seq.visit(this, state);
@@ -79,7 +77,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitSequence(ASTSequence seq, SMPLEnvironment state) {
-        System.out.print("visitSeq...");
+        
         SMPLContainer result = null;
         for (ASTNode stmt : seq.statements()) {
             result = (SMPLContainer) stmt.visit(this, state);
@@ -90,7 +88,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitDefine(ASTDefine def, SMPLEnvironment state) {
-        System.out.print("visitDefine...");
+        
         SMPLContainer value = def.getContents().visit(this, state);
         String name = def.getID();
         state.put(name, value);
@@ -99,42 +97,42 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitID(ASTIdExp id, SMPLEnvironment state) {
-        System.out.print("visitID...");
+        
         SMPLContainer value = state.get(id.getName());
         if (value == null) {
-            System.out.println("Undeclared Variable: \"" + id.getName() + "\".");
+            System.out.println("NameError: Undefined variable \"" + id.getName() + "\".");
         }
-        
+
         return value;
     }
 
     @Override
     public SMPLContainer visitMakeBoolean(ASTBooleanExp bool, SMPLEnvironment state) {
-        System.out.print("visitMakeBoolean...");
+        
         return new SMPLContainer(new SMPLBoolean(bool.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeFloat(ASTFloatExp flVal, SMPLEnvironment state) {
-        System.out.print("visitMakeFloat...");
+        
         return new SMPLContainer(new SMPLFloat(flVal.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeInt(ASTIntExp intVal, SMPLEnvironment state) {
-        System.out.print("visitMakeInt...");
+        
         return new SMPLContainer(new SMPLInt(intVal.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeString(ASTStringExp str, SMPLEnvironment state) {
-        System.out.print("visitMakeString...");
+        
         return new SMPLContainer(new SMPLString(str.getValue()));
     }
 
     @Override
     public SMPLContainer visitMakeVector(ASTVectorExp vec, SMPLEnvironment state) {
-        System.out.print("visitMakeVector...");
+        
         ArrayList<ASTNode> contents = vec.getValue();
         ArrayList<SMPLContainer> container = new ArrayList<SMPLContainer>();
         for (int i = 0; i < contents.size(); i++) {
@@ -146,14 +144,14 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBoolNot(ASTBoNotExp bnot, SMPLEnvironment state) {
-        System.out.print("visitBoolNot...");
+        
         boolean bexp = ((SMPLBoolean) bnot.getOper().visit(this, state).getValue()).isValue();
         return new SMPLContainer(new SMPLBoolean(!bexp));
     }
 
     @Override
     public SMPLContainer visitBoolAnd(ASTBoAndExp band, SMPLEnvironment state) {
-        System.out.print("visitBoolAnd...");
+        
         boolean bexp1 = ((SMPLBoolean) band.getOper().visit(this, state).getValue()).isValue();
         boolean bexp2 = ((SMPLBoolean) band.getOper2().visit(this, state).getValue()).isValue();
         return new SMPLContainer(new SMPLBoolean(bexp1 && bexp2));
@@ -161,7 +159,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBoolOr(ASTBoOrExp bor, SMPLEnvironment state) {
-        System.out.print("visitBoolOr...");
+        
         boolean bexp1 = ((SMPLBoolean) bor.getOper().visit(this, state).getValue()).isValue();
         boolean bexp2 = ((SMPLBoolean) bor.getOper2().visit(this, state).getValue()).isValue();
         return new SMPLContainer(new SMPLBoolean(bexp1 || bexp2));
@@ -169,7 +167,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmAdd(ASTNmAddExp nmadd, SMPLEnvironment state) {
-        System.out.print("visitNmAdd...");
+        
         SMPLContainer container;
         String type1 = nmadd.getOper().visit(this, state).getType();
         String type2 = nmadd.getOper2().visit(this, state).getType();
@@ -187,7 +185,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmSub(ASTNmSubExp nmsub, SMPLEnvironment state) {
-        System.out.print("visitNmSub...");
+        
         SMPLContainer container;
         String type1 = nmsub.getOper().visit(this, state).getType();
         String type2 = nmsub.getOper2().visit(this, state).getType();
@@ -205,7 +203,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmMul(ASTNmMulExp nmmul, SMPLEnvironment state) {
-        System.out.print("visitNmMul...");
+        
         SMPLContainer container;
         String type1 = nmmul.getOper().visit(this, state).getType();
         String type2 = nmmul.getOper2().visit(this, state).getType();
@@ -223,7 +221,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmDiv(ASTNmDivExp nmdiv, SMPLEnvironment state) {
-        System.out.print("visitNmDiv...");
+        
         SMPLContainer container;
         String type1 = nmdiv.getOper().visit(this, state).getType();
         String type2 = nmdiv.getOper2().visit(this, state).getType();
@@ -241,7 +239,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmMod(ASTNmModExp nmmod, SMPLEnvironment state) {
-        System.out.print("visitNmMod...");
+        
         SMPLContainer container;
         String type1 = nmmod.getOper().visit(this, state).getType();
         String type2 = nmmod.getOper2().visit(this, state).getType();
@@ -259,7 +257,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmEquals(ASTNmEqlExp nmeqls, SMPLEnvironment state) {
-        System.out.print("visitNmEq...");
+        
         SMPLContainer container;
         String type1 = nmeqls.getOper().visit(this, state).getType();
         String type2 = nmeqls.getOper2().visit(this, state).getType();
@@ -277,7 +275,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmLThan(ASTNmLessExp nmless, SMPLEnvironment state) {
-        System.out.print("visitNmLT...");
+        
         SMPLContainer container;
         String type1 = nmless.getOper().visit(this, state).getType();
         String type2 = nmless.getOper2().visit(this, state).getType();
@@ -295,7 +293,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmGThan(ASTNmGrtrExp nmgrtr, SMPLEnvironment state) {
-        System.out.print("visitNmGT...");
+        
         SMPLContainer container;
         String type1 = nmgrtr.getOper().visit(this, state).getType();
         String type2 = nmgrtr.getOper2().visit(this, state).getType();
@@ -313,7 +311,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmLEqls(ASTNmLEqlExp nmleql, SMPLEnvironment state) {
-        System.out.print("visitNmLTEQ...");
+        
         SMPLContainer container;
         String type1 = nmleql.getOper().visit(this, state).getType();
         String type2 = nmleql.getOper2().visit(this, state).getType();
@@ -331,7 +329,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmGEqls(ASTNmGEqlExp nmgeql, SMPLEnvironment state) {
-        System.out.print("visitNmGTEQ...");
+        
         SMPLContainer container;
         String type1 = nmgeql.getOper().visit(this, state).getType();
         String type2 = nmgeql.getOper2().visit(this, state).getType();
@@ -349,7 +347,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitNmNotEql(ASTNmNotEqlExp nmneql, SMPLEnvironment state) {
-        System.out.print("visitNmNotEq...");
+        
         SMPLContainer container;
         String type1 = nmneql.getOper().visit(this, state).getType();
         String type2 = nmneql.getOper2().visit(this, state).getType();
@@ -367,7 +365,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBitAnd(ASTBitAndExp btand, SMPLEnvironment state) {
-        System.out.print("visitBitAnd...");
+        
         int oper1 = ((SMPLInt) btand.getOper().visit(this, state).getValue()).getValue();
         int oper2 = ((SMPLInt) btand.getOper2().visit(this, state).getValue()).getValue();
         return new SMPLContainer(new SMPLInt(oper1 & oper2));
@@ -375,7 +373,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBitOr(ASTBitOrExp btor, SMPLEnvironment state) {
-        System.out.print("visitBitOr...");
+        
         int oper1 = ((SMPLInt) btor.getOper().visit(this, state).getValue()).getValue();
         int oper2 = ((SMPLInt) btor.getOper2().visit(this, state).getValue()).getValue();
         return new SMPLContainer(new SMPLInt(oper1 | oper2));
@@ -383,28 +381,26 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitBitNot(ASTBitNotExp btnot, SMPLEnvironment state) {
-        System.out.print("visitBitNot...");
+        
         int oper = ((SMPLInt) btnot.getOper().visit(this, state).getValue()).getValue();
         return new SMPLContainer(new SMPLInt(~oper));
     }
 
     @Override
     public SMPLContainer visitFunDef(ASTFunDefExp fundef, SMPLEnvironment state) {
-        System.out.print("visitFunDef...");
-        String key = fundef.getName();
-        ASTNode body = fundef.getBody();
-        ArrayList<String> params = fundef.getParameters();
-        SMPLContainer contents = new SMPLContainer(new SMPLFunction(key, params, body));
-        state.put(key, contents);
-        return contents;
+        
+        String name = fundef.getName();
+        SMPLContainer value;
+        value = new SMPLContainer(new SMPLFunction(name, fundef.getParameters(), fundef.getBody()));
+        state.put(name, value);
+        return value;
     }
 
     public SMPLContainer visitLetDef(ASTFunDefExp letdef, SMPLEnvironment state) {
-        System.out.print("visitLetDef...");
+        
         SMPLEnvironment newEnv = new SMPLEnvironment(state);
-        ArrayList<ASTNode> params = letdef.getParamNodes();
 
-        for (ASTNode node : params) {
+        for (ASTNode node : letdef.getParamNodes()) {
             node.visit(this, newEnv);
         }
 
@@ -413,7 +409,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitFunCall(ASTFunCallExp funcall, SMPLEnvironment state) {
-        System.out.print("visitFunCall...");
+        
         SMPLEnvironment child = new SMPLEnvironment(state);
         SMPLContainer funcToCallContainer = funcall.getFunction().visit(this, state);
 
@@ -421,18 +417,19 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
             SMPLContainer argsContainer = funcall.getArgs().visit(this, state);
 
-            if (!argsContainer.getType().equals("Vector")) {
-                System.out.print("Invalid function call. Vector required for parameters.");
+            String type = argsContainer.getType();
+
+            if (!"Vector".equals(type)) {
+                System.out.println("TypeError: Expected \"Vector\" got \"" + type + "\".");
                 return null;
             }
 
             SMPLVector args = (SMPLVector) argsContainer.getValue();
 
-            // Flatten the list...
-            ArrayList<SMPLContainer> vals = flatten(args);
-
             SMPLFunction funcToCall = (SMPLFunction) funcToCallContainer.getValue();
 
+            // Flatten the list...
+            ArrayList<SMPLContainer> vals = flatten(args);
             for (int i = 0; i < funcToCall.getParams().size(); i++) {
                 child.put(funcToCall.getParam(i), vals.get(i));
             }
@@ -453,8 +450,9 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
             SMPLContainer funcContainer = funcall.getFunction().visit(this, state);
 
-            if (!"Function".equals(funcContainer.getType())) {
-                System.out.println("Expected function.");
+            String type = funcContainer.getType();
+            if (!"Function".equals(type)) {
+                System.out.println("TypeError: Expected \"Function\", got \"" + type + "\".");
                 return null;
             }
 
@@ -506,7 +504,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitAssign(ASTAssignExp assignExp, SMPLEnvironment state) {
-        System.out.print("visitAssign...");
+        
         String strVarName = assignExp.getVariableName();
         SMPLContainer varVal = assignExp.getValue().visit(this, state);
         state.put(strVarName, varVal);
@@ -515,14 +513,14 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitIfExp(ASTIfExp ifExp, SMPLEnvironment state) {
-        System.out.print("visitIfExp...");
+        
         SMPLContainer ifCond = ifExp.getCondition().visit(this, state);
         SMPLBoolean cond = null;
 
         try {
             cond = (SMPLBoolean) ifCond.getValue();
         } catch (Exception e) {
-            System.out.println("Expected Boolean expression.");
+            System.out.println("TypeError: If statement conditions must be of type \"Boolean\".");
             return null;
         }
 
@@ -539,7 +537,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitPrint(ASTPrintExp printExp, SMPLEnvironment state) {
-        System.out.print("visitPrint...");
+        
         SMPLContainer exp = printExp.getExpression().visit(this, state);
         Object output = exp.getValue().toString();
 
@@ -554,7 +552,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitRead(ASTReadExp _, SMPLEnvironment state) {
-        System.out.print("visitRead...");
+        
         Scanner scan = new Scanner(System.in);
         String str = scan.next();
 
@@ -563,7 +561,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitReadInt(ASTReadIntExp _, SMPLEnvironment state) {
-        System.out.print("visitReadInt...");
+        
         Scanner scan = new Scanner(System.in);
         try {
             int i = scan.nextInt();
@@ -575,14 +573,14 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitPairExp(ASTPairExp pair, SMPLEnvironment state) {
-        System.out.print("visitPair...");
+        
         return new SMPLContainer(new SMPLVector(pair.getExp1().visit(this, state),
                 pair.getExp2().visit(this, state)));
     }
 
     @Override
     public SMPLContainer visitCarExp(ASTCarExp car, SMPLEnvironment state) {
-        System.out.print("visitCar...");
+        
         try {
             SMPLVector v = (SMPLVector) car.getExp().visit(this, state).getValue();
 
@@ -594,14 +592,14 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
                 return values.get(0);
             }
         } catch (Exception ex) {
-            System.out.println("Error with input vector.");
+            System.out.println("RuntimeError: Malformed input vector.");
             return null;
         }
     }
 
     @Override
     public SMPLContainer visitCdrExp(ASTCdrExp cdr, SMPLEnvironment state) {
-        System.out.print("visitCdr...");
+        
         try {
             SMPLVector v = (SMPLVector) cdr.getExp().visit(this, state).getValue();
 
@@ -613,19 +611,19 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
                 return values.get(1);
             }
         } catch (Exception ex) {
-            System.out.println("Error with input vector.");
+            System.out.println("RuntimeError: Malformed input vector.");
             return null;
         }
     }
 
     @Override
     public SMPLContainer visitPairQExp(ASTPairQExp pairq, SMPLEnvironment state) {
-        System.out.print("visitPairQ...");
+        
         return new SMPLContainer(new SMPLBoolean(pairq.getExp().visit(this, state).getType() == "Vector"));
     }
 
     private SMPLVector createLinkedList(ArrayList<ASTNode> lst, SMPLEnvironment state) {
-        System.out.println("createdLinkedList...");
+        
         if (lst.isEmpty()) {
             return new SMPLVector();
         }
@@ -634,7 +632,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     private SMPLVector ctllHelper(ArrayList<ASTNode> l, ASTNode e, SMPLEnvironment state) {
-        System.out.println("ctllHelper...");
+        
         if (l.size() > 1) {
             SMPLVector newVector = new SMPLVector();
 
@@ -656,7 +654,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     private SMPLVector createLinkedListFromContainer(ArrayList<SMPLContainer> lst, SMPLEnvironment state) {
-        System.out.println("createdLinkedListFromContainer...");
+        
         if (lst.isEmpty()) {
             return new SMPLVector();
         }
@@ -665,7 +663,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     private SMPLVector createLinkedList(ArrayList<SMPLContainer> l, SMPLContainer e, SMPLEnvironment state) {
-        System.out.println("ctllHelper...");
+        
         if (l.size() > 1) {
             SMPLVector newVector = new SMPLVector();
 
@@ -688,18 +686,19 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitListExp(ASTListExp list, SMPLEnvironment state) {
-        System.out.print("visitList...");
+        
         // Create a linked list of Pairs...
         return new SMPLContainer(createLinkedList(list.getValues(), state));
     }
 
     @Override
     public SMPLContainer visitSizeExp(ASTSizeExp size, SMPLEnvironment state) {
-        System.out.print("visitSize...");
+        
         SMPLContainer vector = size.getExp().visit(this, state);
 
-        if (!"Vector".equals(vector.getType())) {
-            System.out.println("The size function requires a Vector.");
+        String type = vector.getType();
+        if (!"Vector".equals(type)) {
+            System.out.println("TypeError: Expected \"Vector\", got \"" + type + "\".");
             return null;
         }
 
@@ -709,21 +708,13 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     private int getVectorSize(SMPLVector v) {
-        System.out.println("getVectorSize...");
-        int iCount = 0;
-        while (v.getValues().size() > 1) {
-            iCount++;
-            v = (SMPLVector) v.getValues().get(1).getValue();
-        }
-
-        iCount += v.getValues().size();
-
-        return iCount;
+        
+        return v.getValues().size();
     }
 
     @Override
     public SMPLContainer visitEqvExp(ASTEqvExp eqv, SMPLEnvironment state) {
-        System.out.print("visitEqv...");
+        
         SMPLContainer e1 = eqv.getExp1().visit(this, state);
         SMPLContainer e2 = eqv.getExp2().visit(this, state);
 
@@ -781,7 +772,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
     @Override
     public SMPLContainer visitEqualExp(ASTEqualExp equal, SMPLEnvironment state) {
-        System.out.print("visitObjectsAreEqual...");
+        
         SMPLContainer e1 = equal.getExp1().visit(this, state);
         SMPLContainer e2 = equal.getExp2().visit(this, state);
 
@@ -789,15 +780,16 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitVectorIndexExp(ASTVectorIndexExp idx, SMPLEnvironment state) {
-        System.out.print("visitVecIndex...");
+        
         SMPLContainer vectorContainer = idx.getExp().visit(this, state);
         SMPLContainer indexContainer = idx.getIndex().visit(this, state);
 
-        if (!"Vector".equals(vectorContainer.getType())) {
-            System.out.println("Index expressions must be vectors.");
+        String type = vectorContainer.getType();
+        if (!"Vector".equals(type)) {
+            System.out.println("TypeError: Expected \"Vector\", got \"" + type + "\".");
             return null;
         } else if (!"Integer".equals(indexContainer.getType())) {
-            System.out.println("Indices must be integers.");
+            System.out.println("TypeError: Expected \"Integer\", got \"" + indexContainer.getType() + "\".");
             return null;
         }
 
@@ -808,17 +800,17 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitListConcat(ASTListConcatExp concat, SMPLEnvironment state) {
-        System.out.print("visitListConcat...");
+        
         SMPLContainer vectorContainer1 = concat.getVector1().visit(this, state);
         SMPLContainer vectorContainer2 = concat.getVector2().visit(this, state);
 
         if (!"Vector".equals(vectorContainer1.getType())) {
-            System.out.println("@ requires vectors.");
+            System.out.println("TypeError: Arguments to @ must be of type \"Vector\".");
             return null;
         }
 
         if (!"Vector".equals(vectorContainer2.getType())) {
-            System.out.println("@ requires vectors.");
+            System.out.println("TypeError: Arguments to @ must be of type \"Vector\".");
             return null;
         }
 
@@ -838,23 +830,23 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitStringExp(ASTSubstrExp st, SMPLEnvironment state) {
-        System.out.print("visitString...");
+        
         SMPLContainer strContainer = st.getString().visit(this, state);
         SMPLContainer startContainer = st.getStart().visit(this, state);
         SMPLContainer endContainer = st.getEnd().visit(this, state);
 
         if (!"String".equals(strContainer.getType())) {
-            System.out.println("Substring requires a string as the first argument.");
+            System.out.println("TypeError: Expected \"String\", got \""+strContainer.getType()+"\".");
             return null;
         }
 
         if (!"Integer".equals(startContainer.getType())) {
-            System.out.println("Substring requires an integer as the second argument.");
+            System.out.println("TypeError: Expected \"Integer\", got \""+startContainer.getType()+"\".");
             return null;
         }
 
         if (!"Integer".equals(endContainer.getType())) {
-            System.out.println("Substring requires an integer as the third argument.");
+            System.out.println("TypeError: Expected \"Integer\", got \""+endContainer.getType()+"\".");
             return null;
         }
 
@@ -871,11 +863,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitVecExp(ASTVecExp vec, SMPLEnvironment state) {
-        System.out.print("visitVec...");
+        
         SMPLContainer sizeContainer = vec.getSize().visit(this, state);
 
         if (!"Integer".equals(sizeContainer.getType())) {
-            System.out.println("The size of the vector expression must be an integer.");
+            System.out.println("TypeError: Expected \"Integer\", got \""+sizeContainer.getType()+"\".");
             return null;
         }
 
@@ -893,7 +885,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitVectorListExp(ASTVectorListExp vecList, SMPLEnvironment state) {
-        System.out.print("visitVecList...");
+        
         // Create a Vector of each element...
         ArrayList<SMPLContainer> list = new ArrayList<SMPLContainer>();
         ArrayList<ASTNode> nodeList = vecList.getValues();
@@ -913,11 +905,11 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitMulAssignExp(ASTMulAssignExp mulAssign, SMPLEnvironment state) {
-        System.out.print("visitMulAssign...");
+        
         SMPLContainer expListContainer = mulAssign.getExpression().visit(this, state);
 
         if (!"Vector".equals(expListContainer.getType())) {
-            System.out.println("Expression must evaluate to a vector.");
+            System.out.println("TypeError: Expected \"Integer\", got \""+expListContainer.getType()+"\".");
             return null;
         }
 
@@ -926,8 +918,10 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
 
         ArrayList<SMPLContainer> vals = flatten(expList);
 
-        if (varList.size() != vals.size()) {
-            System.out.println("You must have as many variables as expressions and vice versa.");
+        Integer varCount = new Integer(varList.size());
+        Integer valCount = new Integer(vals.size());
+        if (varCount != valCount) {
+            System.out.println("ArgumentUnpackingError: Tried to unpack "+valCount.toString()+"values into "+ varCount.toString() +" variables.");
             return null;
         }
 
@@ -935,7 +929,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
             SMPLContainer var = state.get(varList.get(i));
 
             if (var == null) {
-                System.out.println("Use of an undefined variable: " + varList.get(i));
+                System.out.println("NameError: Undefined variable " + varList.get(i));
                 return null;
             }
 
@@ -946,12 +940,12 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitCaseExp(ASTCaseExp c, SMPLEnvironment state) {
-        System.out.print("visitCase...");
+        
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public SMPLContainer visitCaseStmtExp(ASTCaseStmtExp cStmt, SMPLEnvironment state) {
-        System.out.print("visitCaseStmt...");
+        
         // Go thru each case exp
         ArrayList<ASTNode> caseExps = cStmt.getCaseExpressions();
 
@@ -961,7 +955,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
             SMPLContainer predContainer = caseExp.getPredicate().visit(this, state);
 
             if (!"Boolean".equals(predContainer.getType())) {
-                System.out.println("Case expressions must begin with boolean conditions");
+                System.out.println("TypeError: Expected \"Integer\", got \""+predContainer.getType()+"\".");
                 return null;
             }
 
@@ -975,7 +969,7 @@ public class SMPLEvaluator implements SMPLVisitor<SMPLEnvironment, SMPLContainer
     }
 
     public SMPLContainer visitLazyExp(ASTLazyExp lazy, SMPLEnvironment state) {
-        System.out.print("visitLazy...");
+        
         return lazy.getExp().visit(this, state);
     }
 }

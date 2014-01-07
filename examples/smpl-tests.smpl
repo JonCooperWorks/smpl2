@@ -25,37 +25,48 @@ print("*** End of Identifiers tests ***\n");
 
 // strings
 println("*** Strings test ***");
-print(substr("foo", 1, 3)); println(" Should be oo");
+print(substr("foo", 1, 3)); 
+println(" Should be oo");
 "def";  // should not give error
 "hello world" ;  // ensures that spaces are allowed
 print("*** End of string tests ***\n");
 
 // arithExps
-print ("1 + 2 * 3 ="); println(1 + 2 * 3) ;
-print("1 + 2 + 3 ="); println(1 + 2 + 3);
-print("1 + 2 > 2 + 3 ="); println(1 + 2 > 2 + 3);
+print ("1 + 2 * 3 =");
+ println(1 + 2 * 3) ;
+print("1 + 2 + 3 ="); 
+println(1 + 2 + 3);
+print("1 + 2 > 2 + 3 ="); 
+println(1 + 2 > 2 + 3);
 
 // def tests
 println("*** def tests ***");
 println("def x 1 ...");
 def x 1 ;
-print("x = "); print(x) ; print("\n");
+print("x = "); 
+print(x) ; 
+print("\n");
 
 println("def x 1 + 2 * 3 ...") ;
 def x 1 + 2 * 3 ;
-print("x = "); print(x); println(" Should be 7");
+print("x = "); 
+print(x); println(" Should be 7");
 
 println("def s <quote foo>") ;
 def s "foo" ;
-print("s = "); print(s); print("\n");
+print("s = "); 
+print(s); 
+print("\n");
 println("*** End of def tests ***");
 
+/*
 // proc tests
 print("*** proc tests ***\n");
 proc(x) x + 1 ;
 proc(x) proc(n) x + n ;
 print(proc(x) x(x)) ; print("\n");
 print("*** End of proc tests ***\n");
+
 
 // call tests
 print ("*** procedure application tests ***\n");
@@ -67,9 +78,11 @@ println("*** End of procedure application tests ***");
 
 println("*** Call expression ***");
 def f proc(y, z) pair(y, z);
-print("call(f, [1, 2]) = "); print(call(f, [1, 2]));
+print("call(f, [1, 2]) = "); 
+print(call(f, [1, 2]));
 println("Should be (1 . 2)"); 
-print("call(f, list(3, 4)) = "); print(call(f, list(3, 4)));
+print("call(f, list(3, 4)) = ");
+ print(call(f, list(3, 4)));
 println("Should be (3 . 4)"); 
 
 def g proc(x) list(x - 1, 1);
@@ -77,6 +90,7 @@ print("call(f, g(4)) = "); print(call(f, g(4)));
 println("Should be (3 . 1)");
 
 println("*** End of Call expression ***");
+
 
 // let tests
 print("*** let tests ***\n");
@@ -96,6 +110,7 @@ let(b be 5,
   print("\n");
   print("f(b) = "); print(f(b)); print (" should be 15, not 6"); print("\n");
   };
+
 
 print("should be 5 not 4...");
 def f proc(n) n + 1 ;
@@ -183,73 +198,88 @@ assgn_test(5);
 print("a ="); print(a); print("Should be 3"); print("\n");
 
 print("*** End of Assignment tests ***\n");
-
+*/
 // vectors
-print("*** Vector tests ***"); print("\n");
+print("*** Vector tests ***");
+ print("\n");
 print("Should print [:1, 2, 3:] - ");
-print([: 1 , 2 , 3 :]) ; print("\n");
+print([: 1 , 2 , 3 :]) ; 
+print("\n");
 
 print("Should print [:3, 5, 8:] - ");
-print([: 1 + 2 , 2 + 3 , 3 + 5 :]) ; print("\n");
+print([: 1 + 2 , 2 + 3 , 3 + 5 :]) ; 
+print("\n");
 
 print("Should print [:3, 12, 5:] - ");
-print([: 1 + 2 , 3 * 4 , 12 - 7 :]) ; print("\n");
+print([: 1 + 2 , 3 * 4 , 12 - 7 :]) ; 
+print("\n");
 
-print("Should print [:0, 2, 4, 6, 8:] - ");
-print([: 5 : proc(n) (2 * n) :]) ; print("\n");
+//print("Should print [:0, 2, 4, 6, 8:] - ");
+//print([: 5 : proc(n) (2 * n) :]) ; print("\n");
 
-print("Should print [:0, 1, 2, 0, 1, 4, 9:] - ");
-print([: 3 : proc(n) n , 4 : proc(n) n * n :]) ; print("\n");
-
+//print("Should print [:0, 1, 2, 0, 1, 4, 9:] - ");
+//print([: 3 : proc(n) n , 4 : proc(n) n * n :]) ; print("\n");
+/*
 print("Should print [:1, 2, 3, 4, 5, 6, 7:] - ");
 print([: 1 , 3 : proc(n) n + 2 , 5 , 6 , 7 :]) ; print("\n");
-print("*** End of Vector tests ***"); print("\n");
+*/
+print("*** End of Vector tests ***");
+ print("\n");
+
 
 // characters
 println("*** Character Tests ***");
-print("char a = "); print(#\a); print("\n");
-print("char nl = "); print(#\nl); print("\n");
-print("char tab = "); print(#\tb); print("\n");
+print("char a = ");
+//print(#\a); 
+print("\n");
+print("char nl = ");
+ //print(#\nl); 
+ print("\n");
+print("char tab = ");
+ //print(#\tb);
+  print("\n");
 println("*** End of Character Tests ***");
 
+
 // nestable comments
-println("*** Nestable Comments ***");
+//println("*** Nestable Comments ***");
 println("Should print 2:");
-print( 1 /* 
-	   + 1 + /* 1 + 2 */
-	   + 4 */
-	   + 1); print("\n");
-println("*** End of Nestable Comments ***");
+//print( 1 /* 
+	//   + 1 + /* 1 + 2 */
+	//   + 4 */
+	//   + 1); print("\n");
+//println("*** End of Nestable Comments ***");
 
 
 // functions are values
-println("*** First class Procedures ***");
-def map proc(f, list)
-/* return a new list, obtained
-   by applying f to each element
-   of list */
+//println("*** First class Procedures ***");
+//def map proc(f, list)
+///* return a new list, obtained
+ //  by applying f to each element
+  // of list */
 
-  if list = #e then #e else pair(f(car(list)), map(f, cdr(list)));
+  //if list = #e then #e else pair(f(car(list)), map(f, cdr(list)));
 
-println("Should print [0 1 4 9 16]");
+//println("Should print [0 1 4 9 16]");
 
-println(map(proc(n) n * n, list(0,1,2,3,4)));
+//println(map(proc(n) n * n, list(0,1,2,3,4)));
 
-def iter proc(f, m, n)
-  if  m > n
-  then 0
-  else f(m) + iter(f, m + 1, n);
+//def iter proc(f, m, n)
+  //if  m > n
+  //then 0
+  //else f(m) + iter(f, m + 1, n);
 
-println("Should print 55...");
-println(iter(proc(n) n, 1, 10));
+//println("Should print 55...");
+//println(iter(proc(n) n, 1, 10));
 
-println("Should print 110...");
-println(iter(proc(n) 2 * n, 1, 10));
+//println("Should print 110...");
+//println(iter(proc(n) 2 * n, 1, 10));
 
-println("Should print 385...");
-println(iter(proc(n) n * n, 1, 10));
-println("*** End of First Class Procedure Tests ***");
+//println("Should print 385...");
+//println(iter(proc(n) n * n, 1, 10));
+//println("*** End of First Class Procedure Tests ***");
 
+/*
 // variable arity procedures
 println("*** Variable Arity Procedures ***");
 def f proc(y, z) pair(y, z);
@@ -286,16 +316,17 @@ def thread-test proc() {
   print(join(handle));
 }
 */
+//
+//println("*** Multivalue test ... ***")
+//def xt 5;
+//def yt 7;
+//def multi proc(u, v) (u/v, u%v);
+//print("before: xt, yt = ("); print(xt); print(", "); //print(yt); print(")");
+//xt, yt := multi(yt, xt);
+//print("after: xt, yt = ("); print(xt); print(", "); //print(yt); print(")");
+//println("*** End of Multivalue test ***");
 
-println("*** Multivalue test ... ***")
-def xt 5;
-def yt 7;
-def multi proc(u, v) (u/v, u%v);
-print("before: xt, yt = ("); print(xt); print(", "); print(yt); print(")");
-xt, yt := multi(yt, xt);
-print("after: xt, yt = ("); print(xt); print(", "); print(yt); print(")");
-println("*** End of Multivalue test ***");
-
+/*
 println("*** Mutual recursion test ***");
 def isEven proc(n) {
    def f proc(x) if x = 0 then #t else g(x - 1);
@@ -307,7 +338,6 @@ print("7 is even. -- "); println(isEven(7));
 print("10 is even. -- "); println(isEven(10));
 println("*** End of Mutual Recursion Test ***");
 
-/*
 println("Optional typing test");
 println("def any x 13 ...");
 def any x 13;
@@ -321,7 +351,6 @@ print("x = "); println(x);
 println("x := <quote foo> ...");
 x := "foo";
 print("x = "); println(x);
-*/
 
 println("*** Graphics tests ***");
 println("** Point Operation Tests **");
@@ -394,3 +423,4 @@ println("It should have printed: 12");
 
 
 
+*/

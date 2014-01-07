@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import ast.SMPLLexer;
 import ast.SMPLParser;
+import natives.SMPLContainer;
 
 public class Repl {
 
@@ -30,15 +31,24 @@ public class Repl {
                 parseEvalShow(System.in, visitor, environment);
             }
         } else {
+
             try {
                 parseEvalShow(new FileInputStream(new File(args[0])), visitor, environment);
             } catch (FileNotFoundException fnfe) {
                 System.out.println("Error: File \"" + args[0] + "\" does not exist!");
             }
+
+            while (true) {
+                try {
+                    parseEvalShow(System.in, visitor, environment);
+                } catch (Exception e) {
+                    System.out.println("SyntaxError");
+                }
+            }
         }
     }
 
-    private static <S, T> void parseEvalShow(InputStream stream, SMPLVisitor<S, T> visitor, S state) throws Exception {
+    private static void parseEvalShow(InputStream stream, SMPLEvaluator visitor, SMPLEnvironment state) throws Exception {
         SMPLParser parser;
         SMPLProgram program = null;
 
@@ -50,12 +60,11 @@ public class Repl {
             throw e;
         }
 
-        T result;
+        SMPLContainer result;
         if (program != null) {
-            try {
-                result = program.visit(visitor, state);
-            } catch (NullPointerException e) {
-                System.out.println("Runtime Error: " + e.getMessage());
+            result = program.visit(visitor, state);
+            if (result != null) {
+                System.out.println(result.getValue());
             }
         }
     }

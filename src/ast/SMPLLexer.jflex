@@ -70,6 +70,7 @@ identifier = {alphanum}+{allchars}*
 // Symbol and Operators
 <YYINITIAL>	{ws}	{/* ignore whitespace */}
 <YYINITIAL>     "//"    {validComment}* {nl} { /* ignore comments */ }
+<YYINITIAL>     \/\*([^*]|\*[^/])*\*+\/ { /* comments */ }
 <YYINITIAL>	"+"	{return new Symbol(sym.PLUS);}
 <YYINITIAL>	"-"	{return new Symbol(sym.MINUS);}
 <YYINITIAL>	"*"	{return new Symbol(sym.MUL);}
@@ -107,7 +108,7 @@ identifier = {alphanum}+{allchars}*
 <YYINITIAL>	"proc"                    {return new Symbol(sym.PROC);}
 <YYINITIAL>	"call"                    {return new Symbol(sym.CALL);}
 <YYINITIAL>	"let"                     {return new Symbol(sym.LET);}
-<YYINITIAL>	"def"                     {return new Symbol(sym.DEF);}
+<YYINITIAL>     def                     {return new Symbol(sym.DEF);}
 <YYINITIAL>	"if"                      {return new Symbol(sym.IF);}
 <YYINITIAL>	"then"                    {return new Symbol(sym.THEN);}
 <YYINITIAL>	"else"                    {return new Symbol(sym.ELSE);}

@@ -167,7 +167,7 @@ factor ::= VARIABLE:v {: RESULT = new ASTIdExp( v ); :} |
            CAR LPAREN expression:e RPAREN {: RESULT = new ASTCarExp(e); :} |
            CDR LPAREN expression:e RPAREN {: RESULT = new ASTCdrExp(e); :} |
            PAIRQ LPAREN expression:e RPAREN {: RESULT = new ASTPairQExp(e); :} |
-           LIST LPAREN expressionList:elist RPAREN {: RESULT = new ASTListExp((ArrayList<ASTNode>)elist); :} |
+           LIST LPAREN LBRACE expressionList:elist RBRACE RPAREN {: RESULT = new ASTListExp((ArrayList<ASTNode>)elist); :} |
            SIZE LPAREN expression:e RPAREN {: RESULT = new ASTSizeExp(e); :} |
            LBRACKET expressionList2:elist RBRACKET {: RESULT = new ASTListExp((ArrayList<ASTNode>)elist); :} |
            EQVQ LPAREN expression:e1 COMMA expression:e2 RPAREN {: RESULT = new ASTEqvExp(e1, e2); :} |
@@ -181,7 +181,7 @@ factor ::= VARIABLE:v {: RESULT = new ASTIdExp( v ); :} |
            LPAREN expression:e RPAREN {: RESULT = e; :};
            
 
-functionDef ::= PROC LPAREN paramList:p RPAREN stmtList:s {: RESULT = new ASTFunDefExp( "function", (ArrayList<String>)p, s ); :};
+functionDef ::= PROC LPAREN paramList:p RPAREN stmt:s {: RESULT = new ASTFunDefExp( "function", (ArrayList<String>)p, s ); :};
 
 
 paramList ::= paramList:pl COMMA param:p {: ((ArrayList<String>)pl).add(p); RESULT = pl; :} |
@@ -203,7 +203,7 @@ functionCall ::= CALL LPAREN expression:funcExp COMMA expression:param RPAREN {:
 expressionList ::= expressionList2:e {: RESULT = e; :} | empty {: RESULT = new ArrayList<ASTNode>(); :};
 
 
-expressionList2 ::= expressionList2:el COMMA expression:e {: RESULT = el; ((ArrayList<ASTNode>)el).add(e); :} |
+expressionList2 ::= expressionList2:el COMMA expression:e {:  ((ArrayList<ASTNode>)el).add(e); RESULT = el; :} |
                       expression:e {: 
                                         ArrayList<ASTNode> lst = new ArrayList<ASTNode>();
                                         lst.add( (ASTNode)e );
